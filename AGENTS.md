@@ -9,10 +9,10 @@ Instruções do usuário e do projeto (AGENTS.md/CLAUDE.md locais) prevalecem so
 
 ## Registro de mudanças
 
-- Mudanças perceptíveis ao usuário (funcionalidades, correções, remoções, segurança) entram em `CHANGELOG.md`, seção `[Não lançado]`, no formato Keep a Changelog, em português e no mesmo commit da mudança. Se o arquivo não existir, crie-o.
-- Não registre refatorações internas, testes, formatação ou mudanças sem efeito visível; o histórico do git cobre isso.
-- Commits seguem Conventional Commits (`feat:`, `fix:`, `refactor:`, `docs:`, `test:`, `chore:`), com escopo opcional.
-- Decisões de arquitetura difíceis de reverter: sugira um ADR em `docs/adr/`, sem criar sem confirmação.
+- Toda mudança perceptível ao usuário cria, no mesmo commit, um fragmento `changelog/unreleased/<slug>.md` com o tipo (Adicionado, Alterado, Descontinuado, Removido, Corrigido, Segurança) e uma linha em português. Crie a pasta se não existir. Se o projeto já usa uma ferramenta de release (Changesets, towncrier…), use a dele.
+- Não registre refatorações internas, testes ou formatação; o git cobre isso.
+- Não altere a versão fora de um lançamento. Ao lançar, só quando o usuário pedir: proponha a versão SemVer a partir dos fragmentos (Removido ou quebra de compatibilidade → major; Adicionado → minor; senão → patch) e, após confirmação, junte-os em `changelog/X.Y.Z.md`, apague os fragmentos, atualize a versão no manifesto do projeto e crie a tag `vX.Y.Z`.
+- Commits seguem Conventional Commits; decisões de arquitetura difíceis de reverter: sugira um ADR em `docs/adr/`.
 
 ## Verificação de interface
 
