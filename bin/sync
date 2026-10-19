@@ -1,0 +1,137 @@
+#!/usr/bin/env bash
+# Gera build/AGENTS.md (regras + local.md + índice de memórias + blocos externos)
+# e aponta os arquivos globais de cada agente para ele.
+set -euo pipefail
+
+AGENTS_HOME="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+MEMORY_DIR="$AGENTS_HOME/memory"
+BUILD_DIR="$AGENTS_HOME/build"
+EXTERNAL_DIR="$BUILD_DIR/external"
+OUT="$BUILD_DIR/AGENTS.md"
+INDEX_CAP="${INDEX_CAP:-30}"
+
+# Arquivo global de cada agente. Só é ligado se o diretório do agente existir.
+TARGETS=(
+  "$HOME/.claude/CLAUDE.md"
+  "$HOME/.codex/AGENTS.md"
+  "$HOME/.config/opencode/AGENTS.md"
+  "$HOME/.gemini/GEMINI.md"
+)
+
+# Copia blocos <!-- nome:begin --> … <!-- nome:end --> escritos por outras
+# ferramentas (ex.: lerd) para build/external/nome.md, para sobreviverem à regeração.
+extract_blocks() {
+  awk -v dir="$EXTERNAL_DIR" '
+    !name && /^<!-- [A-Za-z0-9_.-]+:begin/ {
+      n = $0; sub(/^<!-- /, "", n); sub(/:begin.*/, "", n)
+      if (n != "memory") { name = n; file = dir "/" name ".md" }
+    }
+    name { print > file }
+    name && index($0, "<!-- " name ":end") == 1 { close(file); name = "" }
+  ' "$1"
+}
+
+# Valor de um campo do frontmatter YAML (só a forma simples "chave: valor").
+field() {
+  awk -v k="$2" '
+    NR == 1 { if ($0 != "---") exit; next }
+    $0 == "---" { exit }
+    index($0, k ":") == 1 { v = substr($0, length(k) + 2); gsub(/^[ \t]+|[ \t]+$/, "", v); print v; exit }
+  ' "$1"
+}
+
+build_index() {
+  local f desc tags rel lines count
+  lines="$(
+    for f in "$MEMORY_DIR"/*.md; do
+      [[ -e "$f" ]] || continue
+      rel="memory/$(basename "$f")"
+      desc="$(field "$f" description | sed 's/^"\(.*\)"$/\1/')"
+      tags="$(field "$f" applies_to | tr -d '[]"'"'"' ')"
+      if [[ -z "$desc" ]]; then
+        echo "aviso: $rel sem description no frontmatter" >&2
+        desc="$(basename "$f" .md)"
+      fi
+      # Ordem estável (sem tag primeiro, depois por tag e arquivo) para não invalidar o cache de prompt.
+      printf '%s\t%s\t- %s%s (%s)\n' "${tags:-}" "$rel" "${tags:+[$tags] }" "$desc" "$rel"
+    done | LC_ALL=C sort | cut -f3
+  )"
+  count=0
+  [[ -n "$lines" ]] && count="$(printf '%s\n' "$lines" | wc -l)"
+
+  echo "<!-- memory:begin -->"
+  echo "### Índice de memórias"
+  echo
+  if (( count == 0 )); then
+    echo "_Nenhuma memória ainda._"
+  else
+    printf '%s\n' "$lines"
+  fi
+  if (( count > INDEX_CAP )); then
+    echo
+    echo "⚠ Índice acima do teto ($count/$INDEX_CAP): consolide memórias antes de acrescentar outras."
+    echo "aviso: índice com $count memórias (teto $INDEX_CAP)" >&2
+  fi
+  echo "<!-- memory:end -->"
+}
+
+link_target() {
+  local target="$1" backup
+  [[ -d "$(dirname "$target")" ]] || return 0
+  if [[ -L "$target" && "$(readlink "$target")" == "$OUT" ]]; then
+    return 0
+  fi
+  if [[ -f "$target" && ! -L "$target" ]]; then
+    backup="$(mktemp "$target.bak-$(date +%Y%m%d%H%M%S)-XXXX")"
+    cp -p "$target" "$backup"
+    echo "backup: $backup"
+  fi
+  ln -sfn "$OUT" "$target"
+  echo "link: $target -> $OUT"
+}
+
+main() {
+  local target block
+  mkdir -p "$EXTERNAL_DIR" "$MEMORY_DIR"
+
+  # Blocos externos: primeiro os do arquivo gerado, depois os de arquivos que
+  # ainda não são link para ele (um agente/ferramenta pode ter substituído o link).
+  [[ -f "$OUT" ]] && extract_blocks "$OUT"
+  for target in "${TARGETS[@]}"; do
+    if [[ -e "$target" && "$(readlink -f "$target")" != "$OUT" ]]; then
+      extract_blocks "$target"
+    fi
+  done
+
+  {
+    echo "<!-- Gerado por $AGENTS_HOME/bin/sync. Edite AGENTS.md, local.md ou memory/ e rode o sync. -->"
+    echo
+    cat "$AGENTS_HOME/AGENTS.md"
+    echo
+    build_index
+    if [[ -f "$AGENTS_HOME/local.md" ]]; then
+      echo
+      cat "$AGENTS_HOME/local.md"
+    fi
+    for block in "$EXTERNAL_DIR"/*.md; do
+      [[ -e "$block" ]] || continue
+      echo
+      cat "$block"
+    done
+  } > "$OUT.tmp"
+  mv "$OUT.tmp" "$OUT"
+
+  for target in "${TARGETS[@]}"; do
+    link_target "$target"
+  done
+
+  if [[ -d "$MEMORY_DIR/.git" && -n "$(git -C "$MEMORY_DIR" status --porcelain)" ]]; then
+    git -C "$MEMORY_DIR" add -A
+    git -C "$MEMORY_DIR" commit -qm "memória: sync $(date +%F)" \
+      || echo "aviso: não foi possível commitar memory/" >&2
+  fi
+
+  echo "ok: $OUT"
+}
+
+main "$@"
