@@ -4,7 +4,7 @@ Regras globais e uma memória em markdown simples, compartilhadas entre Claude C
 
 - **Regras** ([AGENTS.md](AGENTS.md)): curtas, curadas à mão, carregadas em toda sessão.
 - **Memória** (`memory/`): um arquivo por preferência ou correção que você der aos agentes. Só um índice de uma linha por memória entra no contexto (teto de 30); o conteúdo é lido sob demanda.
-- **Um arquivo gerado** (`build/AGENTS.md`) junta tudo, e os arquivos globais de cada agente viram links para ele.
+- **Arquivos gerados** (`build/AGENTS.md` e `build/CLAUDE.md`) juntam tudo, e os arquivos globais de cada agente viram links para eles.
 
 ## Instalação
 
@@ -24,7 +24,7 @@ O `install.sh` cria `memory/` como repositório git próprio e roda o `bin/sync`
 
 1. faz backup (`.bak-<data>`) de arquivos globais existentes que não sejam links;
 2. preserva blocos `<!-- nome:begin -->` … `<!-- nome:end -->` escritos por outras ferramentas (como o lerd), copiando-os para `build/external/`;
-3. gera `build/AGENTS.md` e liga `~/.claude/CLAUDE.md`, `~/.codex/AGENTS.md`, `~/.config/opencode/AGENTS.md` e `~/.gemini/GEMINI.md` a ele (só para agentes cujo diretório existe);
+3. gera `build/AGENTS.md` e liga a ele `~/.codex/AGENTS.md`, `~/.config/opencode/AGENTS.md` e `~/.gemini/GEMINI.md`; gera `build/CLAUDE.md`, igual mas sem os blocos externos (o Claude Code já recebe as instruções dos servidores MCP, como o lerd), e liga `~/.claude/CLAUDE.md` a ele. Só liga agentes cujo diretório existe;
 4. commita mudanças em `memory/`.
 
 Rode `~/.agents/bin/sync` de novo sempre que editar regras ou memórias (os agentes fazem isso sozinhos ao salvar uma memória). Para atualizar as regras: `git -C ~/.agents pull && ~/.agents/bin/sync`.
