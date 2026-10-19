@@ -7,6 +7,13 @@ Instruções do usuário e do projeto (AGENTS.md/CLAUDE.md locais) prevalecem so
 - JS/TS: prefira `bun`/`bunx` a npm/npx/yarn. Python: prefira `uv` (`uv run`, `uv add`; `uv pip install -r requirements.txt` para requirements).
 - Se o projeto já usa outro gerenciador (lockfile ou configuração existente), use o do projeto. Nunca crie um segundo lockfile; se um comando bun falhar por incompatibilidade, recorra a `npx`/`npm run` só para executar, não para instalar.
 
+## Registro de mudanças
+
+- Mudanças perceptíveis ao usuário (funcionalidades, correções, remoções, segurança) entram em `CHANGELOG.md`, seção `[Não lançado]`, no formato Keep a Changelog, em português e no mesmo commit da mudança. Se o arquivo não existir, crie-o.
+- Não registre refatorações internas, testes, formatação ou mudanças sem efeito visível; o histórico do git cobre isso.
+- Commits seguem Conventional Commits (`feat:`, `fix:`, `refactor:`, `docs:`, `test:`, `chore:`), com escopo opcional.
+- Decisões de arquitetura difíceis de reverter: sugira um ADR em `docs/adr/`, sem criar sem confirmação.
+
 ## Verificação de interface
 
 - Verifique UI com testes E2E ou capturas headless em larguras de mobile e desktop, analisando as imagens (ex.: `bunx playwright screenshot --viewport-size=390,844 <url> mobile.png`). Use um navegador interativo só quando disponível e necessário.
