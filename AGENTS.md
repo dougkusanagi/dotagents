@@ -14,6 +14,10 @@ Instruções do usuário e do projeto (AGENTS.md/CLAUDE.md locais) prevalecem so
 - Não altere a versão fora de um lançamento. Ao lançar, só quando o usuário pedir: proponha a versão SemVer a partir dos fragmentos (Removido ou quebra de compatibilidade → major; Adicionado → minor; senão → patch) e, após confirmação, junte-os em `changelog/X.Y.Z.md`, apague os fragmentos, atualize a versão no manifesto do projeto e crie a tag `vX.Y.Z`.
 - Commits seguem Conventional Commits; decisões de arquitetura difíceis de reverter: sugira um ADR em `docs/adr/`.
 
+## Cadastro e acesso
+
+- Em sistemas internos ou com acesso restrito, desative por padrão o cadastro público, salvo requisito explícito. Remova `/register`, endpoints equivalentes e links de cadastro; teste que usuários não autenticados não conseguem criar contas. Preserve o provisionamento autorizado por administradores ou convites, quando previsto.
+
 ## Testes Laravel
 
 - Em projetos Laravel, substitua o workflow padrão de testes do GitHub Actions por validação local: antes de cada commit, os testes afetados devem passar; para commits ou integrações em `main`/`master`, toda a suíte. Preserve os demais workflows.
