@@ -1,0 +1,12 @@
+# Shared by install.sh and bin/sync. DOTAGENTS_* name application directories.
+xdg_path() {
+  local value="${!1:-}"
+  if [[ "$value" == /* ]]; then printf '%s\n' "$value"; else printf '%s\n' "$2"; fi
+}
+DOTAGENTS_XDG_CONFIG="$(xdg_path XDG_CONFIG_HOME "$HOME/.config")"
+DOTAGENTS_DATA="${DOTAGENTS_DATA:-$(xdg_path XDG_DATA_HOME "$HOME/.local/share")/dotagents}"
+DOTAGENTS_CONFIG="${DOTAGENTS_CONFIG:-$DOTAGENTS_XDG_CONFIG/dotagents}"
+DOTAGENTS_STATE="${DOTAGENTS_STATE:-$(xdg_path XDG_STATE_HOME "$HOME/.local/state")/dotagents}"
+for directory in "$DOTAGENTS_DATA" "$DOTAGENTS_CONFIG" "$DOTAGENTS_STATE"; do
+  [[ "$directory" == /* ]] || { echo 'erro: DOTAGENTS_* deve ser um caminho absoluto' >&2; exit 1; }
+done

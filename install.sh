@@ -1,18 +1,19 @@
 #!/usr/bin/env bash
-# Prepara memory/ como repositório git próprio e liga os agentes via bin/sync.
 set -euo pipefail
-
-AGENTS_HOME="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-
-if [[ "$AGENTS_HOME" != "$HOME/.agents" ]]; then
-  echo "aviso: as regras citam ~/.agents, mas o repositório está em $AGENTS_HOME" >&2
+REPO="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
+source "$REPO/bin/paths"
+command_path="$HOME/.local/bin/dotagents-sync"
+if [[ -e "$command_path" && ! -L "$command_path" ]]; then
+  echo "erro: arquivo existente: $command_path" >&2
+  exit 1
 fi
-
-mkdir -p "$AGENTS_HOME/memory"
-if [[ ! -d "$AGENTS_HOME/memory/.git" ]]; then
-  git -C "$AGENTS_HOME/memory" init -q -b main
-  echo "memory/: repositório git criado (adicione um remote privado para sincronizar entre máquinas)"
+mkdir -p "$DOTAGENTS_DATA/memory" "$DOTAGENTS_CONFIG" "$DOTAGENTS_STATE" "$HOME/.local/bin"
+if [[ ! -e "$DOTAGENTS_DATA/memory/.git" ]]; then
+  git -C "$DOTAGENTS_DATA/memory" init -q -b main
 fi
-
-chmod +x "$AGENTS_HOME/bin/sync"
-"$AGENTS_HOME/bin/sync"
+ln -sfn "$REPO/bin/sync" "$command_path"
+case ":$PATH:" in
+  *":$HOME/.local/bin:"*) ;;
+  *) echo 'aviso: adicione ~/.local/bin ao PATH para usar dotagents-sync' >&2 ;;
+esac
+"$command_path"

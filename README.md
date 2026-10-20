@@ -1,68 +1,73 @@
 # dotagents
 
-Regras globais e uma memória em markdown simples, compartilhadas entre Claude Code, Codex, OpenCode e Gemini CLI, sem inflar o contexto base.
+Regras globais e memórias em Markdown compartilhadas entre Claude Code, Codex, OpenCode e Gemini CLI. Só um índice estável entra no contexto; cada memória é lida sob demanda.
 
-- **Regras** ([AGENTS.md](AGENTS.md)): curtas, curadas à mão, carregadas em toda sessão.
-- **Memória** (`memory/`): um arquivo por preferência ou correção que você der aos agentes. Só um índice de uma linha por memória entra no contexto (teto de 30); o conteúdo é lido sob demanda.
-- **Arquivos gerados** (`build/AGENTS.md` e `build/CLAUDE.md`) juntam tudo, e os arquivos globais de cada agente viram links para eles.
+## Instalação e atualização
 
-## Instalação
-
-Com `~/.agents` vazio ou inexistente:
+Clone em qualquer pasta, fora de `~/.agents`:
 
 ```bash
-git clone https://github.com/dougkusanagi/dotagents ~/.agents && ~/.agents/install.sh
+git clone https://github.com/dougkusanagi/dotagents ~/dev/dotagents
+~/dev/dotagents/install.sh
 ```
 
-Se `~/.agents` já existir (por exemplo, com `skills/`):
+Requer Bash, Git, ferramentas GNU (`readlink -f`, `mktemp`) e `flock`. O instalador cria o repositório git das memórias e `~/.local/bin/dotagents-sync`, um link para `bin/sync`. Adicione `~/.local/bin` ao PATH se avisado.
 
-```bash
-cd ~/.agents && git init -b main && git remote add origin https://github.com/dougkusanagi/dotagents && git pull origin main && ./install.sh
-```
+Para atualizar: `git -C ~/dev/dotagents pull --ff-only && dotagents-sync`.
 
-O `install.sh` cria `memory/` como repositório git próprio e roda o `bin/sync`, que:
+## Layout
 
-1. faz backup (`.bak-<data>`) de arquivos globais existentes que não sejam links;
-2. preserva blocos `<!-- nome:begin -->` … `<!-- nome:end -->` escritos por outras ferramentas (como o lerd), copiando-os para `build/external/`;
-3. gera `build/AGENTS.md` e liga a ele `~/.codex/AGENTS.md`, `~/.config/opencode/AGENTS.md` e `~/.gemini/GEMINI.md`; gera `build/CLAUDE.md`, igual mas sem os blocos externos (o Claude Code já recebe as instruções dos servidores MCP, como o lerd), e liga `~/.claude/CLAUDE.md` a ele. Só liga agentes cujo diretório existe;
-4. commita mudanças em `memory/`.
+- Repositório: regras em `AGENTS.md`, scripts e documentação; nenhum dado pessoal.
+- Memórias: `${DOTAGENTS_DATA}/memory`, padrão `~/.local/share/dotagents/memory`.
+- Regras pessoais: `${DOTAGENTS_CONFIG}/local.md`, padrão `~/.config/dotagents/local.md`.
+- Estado: `${DOTAGENTS_STATE}`, padrão `~/.local/state/dotagents`, com `AGENTS.md`, `CLAUDE.md` e `external/`.
+- Skills de outras ferramentas: `~/.agents/skills`, nunca gerenciado pelo dotagents.
 
-Rode `~/.agents/bin/sync` de novo sempre que editar regras ou memórias (os agentes fazem isso sozinhos ao salvar uma memória). Para atualizar as regras: `git -C ~/.agents pull && ~/.agents/bin/sync`.
+As variáveis `DOTAGENTS_*` indicam diretórios do aplicativo. Quando vazias ou ausentes, usam respectivamente `XDG_DATA_HOME`, `XDG_CONFIG_HOME` e `XDG_STATE_HOME`, com `/dotagents`. XDG vazio ou relativo usa o padrão em HOME; DOTAGENTS relativo é erro. Use os mesmos valores na instalação e em todas as sincronizações, exportando-os no ambiente se personalizados.
 
-## Memórias
+## Sincronização
 
-Os agentes salvam memórias quando você corrige algo ou expressa uma preferência durável que vale para todos os projetos. Formato:
+Rode `dotagents-sync` após editar regras, memórias ou `local.md`. Ele preserva blocos `<!-- nome:begin -->` … `<!-- nome:end -->` em `external/nome.md`, inclusive quando outra ferramenta substitui um link por arquivo comum. Arquivos comuns são preservados em backups únicos `.bak-<data>-XXXX` antes de substituir por links.
+
+Codex (`~/.codex/AGENTS.md`), OpenCode (`${XDG_CONFIG_HOME:-~/.config}/opencode/AGENTS.md`) e Gemini (`~/.gemini/GEMINI.md`) apontam para o estado `AGENTS.md`. Claude (`~/.claude/CLAUDE.md`) aponta para `CLAUDE.md`, sem blocos externos, pois já recebe o lerd por MCP. Só são ligados agentes cujo diretório existe.
+
+O índice usa caminhos absolutos, ordem `LC_ALL=C sort` e aviso acima de `INDEX_CAP` (padrão 30), sem truncar memórias. Os arquivos gerados informam o caminho efetivo das memórias. Execuções simultâneas são serializadas por lock.
+
+## Memórias e regras pessoais
+
+Crie um `.md` por memória:
 
 ```markdown
 ---
-description: Testes com Pest, não PHPUnit
+description: Testes com Pest
 applies_to: [php]
 ---
 
-Usar Pest em projetos PHP novos e nos que já o usam.
-Por quê: sintaxe mais curta e plugins de browser testing.
+Prefira Pest nos projetos que já o utilizam.
 ```
 
-Cada arquivo vira uma linha no índice: `- [php] Testes com Pest, não PHPUnit (memory/pest.md)`. A ordem é estável (sem datas) para aproveitar o cache de prompt.
+`description` ocupa uma linha; `applies_to` é opcional. O parser aceita campos simples, não YAML completo. `local.md` entra após o índice.
 
-Para sincronizar entre máquinas, crie um repositório **privado** e ligue-o a `memory/`:
+O sync faz commit local automático das alterações das memórias; nunca push. Configure a identidade Git para permitir commits. Um remote privado é opcional:
 
 ```bash
-git -C ~/.agents/memory remote add origin git@github.com:<usuario>/agents-memory.git && git -C ~/.agents/memory push -u origin main
+git -C ~/.local/share/dotagents/memory remote add origin git@github.com:usuario/agents-memory.git
 ```
 
-O `sync` só commita; o push é sempre seu.
+## Migração do layout antigo
 
-## Regras pessoais
+Primeiro teste: `bash tests/test.sh` (requer Python 3 apenas para os testes). Antes de aplicar na instalação ativa, revise `git status`, inventarie inclusive arquivos ignorados em `~/.agents`, escolha um destino inexistente e registre os links atuais para recuperação. Preserve backups existentes dos agentes.
 
-Regras que você não quer publicar vão em `~/.agents/local.md` (ignorado pelo git) e entram no arquivo gerado logo após o índice.
-
-## Desinstalar
-
-Remova os links e restaure os backups, se quiser:
+Com estes scripts já presentes no clone antigo:
 
 ```bash
-rm ~/.claude/CLAUDE.md ~/.codex/AGENTS.md ~/.config/opencode/AGENTS.md ~/.gemini/GEMINI.md
+~/.agents/bin/migrate "$HOME/dev/dotagents"
 ```
 
-Um bloco externo que não deve mais aparecer (ferramenta removida) sai apagando `build/external/<nome>.md` e rodando o `sync`.
+O migrador recusa destinos existentes e arquivos desconhecidos. Preserva `.git` do clone e das memórias, remotes, alterações locais e `skills/` no mesmo lugar. Copia o estado antigo antes de mover o código, migra memórias e `local.md`, instala o comando e refaz links. Só apaga `build/` antigo após sucesso. Não cria remote de memórias nem faz push.
+
+Se houver interrupção, não repita às cegas: confira origem e destinos. O código estará na origem ou no destino, memórias/configuração nos respectivos caminhos e o `build/` antigo permanece se a instalação falhar. Corrija a causa e rode `<REPO>/install.sh`; para desfazer, restaure os diretórios e links inventariados, sem sobrescrever dados novos.
+
+## Remoção
+
+Remova apenas links que apontem para dotagents e restaure os backups desejados. Memórias, configuração e estado são preservados até remoção explícita. Para retirar um bloco externo, remova também suas ocorrências nos arquivos globais/gerados antes de apagar `external/<nome>.md` e sincronizar, evitando sua recaptura.
