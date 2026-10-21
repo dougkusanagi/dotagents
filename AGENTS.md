@@ -44,6 +44,7 @@ Instruções do usuário e do projeto (AGENTS.md/CLAUDE.md locais) prevalecem so
 
 ## Usabilidade e padrões de interface
 
+- Ao criar ou alterar interfaces, sempre inclua no menu um widget discreto e acessível para alternar entre os modos disponíveis: Claro (`light`), Escuro (`dark`) e Sistema (`system`). Indique a opção ativa, persista a preferência e, em Sistema, acompanhe o tema do dispositivo; reutilize os componentes e o mecanismo de tema do projeto.
 - Preserve a linguagem visual do produto e escolha componentes pela tarefa e pelo contexto. Não acrescente dependências, abstrações ou complexidade apenas por novidade.
 - Em seleções extensas, prefira um combobox acessível com pesquisa; para poucas opções, select simples ou radio buttons. Siga a estratégia de busca e carregamento do projeto para listas grandes.
 - Quando fizer sentido criar uma entidade relacionada durante o preenchimento, ofereça uma ação explícita como "Criar categoria", distinta das opções e especialmente útil quando a busca não encontrar resultados. Respeite permissões e trate duplicidades.

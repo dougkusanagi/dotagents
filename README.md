@@ -31,6 +31,10 @@ Rode `dotagents-sync` após editar regras, memórias ou `local.md`. Ele preserva
 
 Codex (`~/.codex/AGENTS.md`), OpenCode (`${XDG_CONFIG_HOME:-~/.config}/opencode/AGENTS.md`) e Gemini (`~/.gemini/GEMINI.md`) apontam para o estado `AGENTS.md`. Claude (`~/.claude/CLAUDE.md`) aponta para `CLAUDE.md`, sem blocos externos, pois já recebe o lerd por MCP. Só são ligados agentes cujo diretório existe.
 
+A instalação e cada sync descobrem também perfis em `~/.codex_*` e `~/.codex-*` que contenham `config.toml` ou `auth.json`, como `~/.codex_mkt` e `~/.codex_douglas`. Arquivos de instruções existentes são preservados em backup; credenciais e configurações não são alteradas.
+
+Quando `CODEX_HOME` está definido com um caminho absoluto, o sync também configura o `AGENTS.md` desse perfil, inclusive fora desses nomes: `CODEX_HOME="/outro/perfil" dotagents-sync`. Abra uma nova sessão do agente após atualizar as regras.
+
 O índice usa caminhos absolutos, ordem `LC_ALL=C sort` e aviso acima de `INDEX_CAP` (padrão 30), sem truncar memórias. Os arquivos gerados informam o caminho efetivo das memórias. Execuções simultâneas são serializadas por lock.
 
 ## Memórias e regras pessoais

@@ -23,6 +23,22 @@ TARGETS=(
   "$HOME/.gemini/GEMINI.md|$OUT"
 )
 
+# Reconhece perfis convencionais sem confundir qualquer pasta com um perfil.
+for profile in "$HOME"/.codex_* "$HOME"/.codex-*; do
+  [[ -d "$profile" && ( -f "$profile/config.toml" || -f "$profile/auth.json" ) ]] || continue
+  TARGETS+=("$profile/AGENTS.md|$OUT")
+done
+
+# CODEX_HOME também permite perfis fora dos nomes convencionais.
+if [[ -n "${CODEX_HOME:-}" && "$CODEX_HOME" != "$HOME/.codex" ]]; then
+  [[ "$CODEX_HOME" == /* ]] || { echo 'erro: CODEX_HOME deve ser um caminho absoluto' >&2; exit 1; }
+  found_profile=no
+  for pair in "${TARGETS[@]}"; do
+    [[ "${pair%%|*}" != "${CODEX_HOME%/}/AGENTS.md" ]] || found_profile=yes
+  done
+  [[ "$found_profile" == yes ]] || TARGETS+=("${CODEX_HOME%/}/AGENTS.md|$OUT")
+fi
+
 # Copia blocos <!-- nome:begin --> … <!-- nome:end --> escritos por outras
 # ferramentas (ex.: lerd) para build/external/nome.md, para sobreviverem à regeração.
 extract_blocks() {

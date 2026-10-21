@@ -17,7 +17,7 @@ def run(args, env, ok=True):
 
 with tempfile.TemporaryDirectory(prefix='dotagents-tests-') as temp:
     root = Path(temp)
-    env = {k: v for k, v in os.environ.items() if not k.startswith(('DOTAGENTS_', 'XDG_', 'GIT_'))}
+    env = {k: v for k, v in os.environ.items() if not k.startswith(('DOTAGENTS_', 'XDG_', 'GIT_')) and k != 'CODEX_HOME'}
     home = root / 'home'
     home.mkdir()
     env.update(HOME=str(home), GIT_CONFIG_NOSYSTEM='1', GIT_CONFIG_GLOBAL='/dev/null',
@@ -29,10 +29,23 @@ with tempfile.TemporaryDirectory(prefix='dotagents-tests-') as temp:
     for target in agents:
         target.parent.mkdir(parents=True)
         target.write_text(BLOCK)
+    # Installation discovers conventional profiles, including names with spaces.
+    profiles = [home / '.codex_work', home / '.codex-personal account']
+    for profile, marker in zip(profiles, ['config.toml', 'auth.json']):
+        profile.mkdir()
+        (profile / marker).write_text('')
+        (profile / 'AGENTS.md').write_text('previous rules\n')
+    unrelated = home / '.codex_unrelated'
+    unrelated.mkdir()
     run([repo / 'install.sh'], env)
     command = home / '.local/bin/dotagents-sync'
     state = home / '.local/state/dotagents'
     memory = home / '.local/share/dotagents/memory'
+    for profile in profiles:
+        assert (profile / 'AGENTS.md').is_symlink()
+        assert (profile / 'AGENTS.md').resolve() == state / 'AGENTS.md'
+        assert any(p.read_text() == 'previous rules\n' for p in profile.glob('AGENTS.md.bak-*'))
+    assert not (unrelated / 'AGENTS.md').exists()
     assert (memory / '.git').is_dir()
     assert 'lerd original' in (state / 'AGENTS.md').read_text()
     assert 'lerd original' not in (state / 'CLAUDE.md').read_text()
@@ -48,6 +61,26 @@ with tempfile.TemporaryDirectory(prefix='dotagents-tests-') as temp:
     assert output == (state / 'AGENTS.md').read_bytes()
     assert head == run(['git', '-C', memory, 'rev-parse', 'HEAD'], env).stdout
     assert backups == list(home.rglob('*.bak-*'))
+    # Sync also discovers profiles created after installation, without duplicates.
+    later = home / '.codex_later'
+    later.mkdir()
+    (later / 'config.toml').write_text('')
+    run([command], dict(env, CODEX_HOME=str(later) + '/'))
+    assert (later / 'AGENTS.md').resolve() == state / 'AGENTS.md'
+    assert not list(later.glob('AGENTS.md.bak-*'))
+    # Custom Codex profiles receive instructions and preserve existing files.
+    profile = home / 'custom codex'
+    profile.mkdir()
+    (profile / 'AGENTS.md').write_text('existing profile rules\n')
+    profile_env = dict(env, CODEX_HOME=str(profile))
+    run([command], profile_env)
+    assert (profile / 'AGENTS.md').is_symlink()
+    assert (profile / 'AGENTS.md').resolve() == state / 'AGENTS.md'
+    assert any(p.read_text() == 'existing profile rules\n' for p in profile.glob('AGENTS.md.bak-*'))
+    profile_backups = list(profile.glob('AGENTS.md.bak-*'))
+    run([command], profile_env)
+    assert profile_backups == list(profile.glob('AGENTS.md.bak-*'))
+    run([command], dict(env, CODEX_HOME='relative'), ok=False)
     # Freeze timestamps to prove backup uniqueness in the same second.
     tools = root / 'tools'
     tools.mkdir()
