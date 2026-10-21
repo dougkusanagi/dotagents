@@ -44,6 +44,8 @@ Instruções do usuário e do projeto (AGENTS.md/CLAUDE.md locais) prevalecem so
 
 ## Usabilidade e padrões de interface
 
+- Nas interfaces voltadas ao usuário final, nunca use mensagens genéricas ou jargão técnico: descreva em linguagem simples a ação em andamento, seu resultado ou o problema e o próximo passo útil, conforme o contexto. Informe apenas estados e detalhes reais, sem inventar progresso, prazos ou garantias.
+
 - Ao criar ou alterar interfaces, sempre inclua no menu um widget discreto e acessível para alternar entre os modos disponíveis: Claro (`light`), Escuro (`dark`) e Sistema (`system`). Indique a opção ativa, persista a preferência e, em Sistema, acompanhe o tema do dispositivo; reutilize os componentes e o mecanismo de tema do projeto.
 - Preserve a linguagem visual do produto e escolha componentes pela tarefa e pelo contexto. Não acrescente dependências, abstrações ou complexidade apenas por novidade.
 - Em seleções extensas, prefira um combobox acessível com pesquisa; para poucas opções, select simples ou radio buttons. Siga a estratégia de busca e carregamento do projeto para listas grandes.
