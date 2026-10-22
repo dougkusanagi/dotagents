@@ -17,7 +17,7 @@ Para atualizar: `git -C ~/dev/dotagents pull --ff-only && dotagents-sync`.
 
 ## Layout
 
-- Repositório: regras em `AGENTS.md`, scripts e documentação; nenhum dado pessoal.
+- Repositório: regras globais em `global.md`, instruções de manutenção em `AGENTS.md`, scripts e documentação; nenhum dado pessoal.
 - Memórias: `${DOTAGENTS_DATA}/memory`, padrão `~/.local/share/dotagents/memory`.
 - Regras pessoais: `${DOTAGENTS_CONFIG}/local.md`, padrão `~/.config/dotagents/local.md`.
 - Estado: `${DOTAGENTS_STATE}`, padrão `~/.local/state/dotagents`, com `AGENTS.md`, `CLAUDE.md` e `external/`.
@@ -26,6 +26,8 @@ Para atualizar: `git -C ~/dev/dotagents pull --ff-only && dotagents-sync`.
 As variáveis `DOTAGENTS_*` indicam diretórios do aplicativo. Quando vazias ou ausentes, usam respectivamente `XDG_DATA_HOME`, `XDG_CONFIG_HOME` e `XDG_STATE_HOME`, com `/dotagents`. XDG vazio ou relativo usa o padrão em HOME; DOTAGENTS relativo é erro. Use os mesmos valores na instalação e em todas as sincronizações, exportando-os no ambiente se personalizados.
 
 ## Sincronização
+
+Edite `global.md` para alterar as regras globais compartilhadas; o `AGENTS.md` deste repositório orienta sua manutenção e não é sincronizado. Os arquivos gerados continuam com os nomes `AGENTS.md` e `CLAUDE.md`.
 
 Rode `dotagents-sync` após editar regras, memórias ou `local.md`. Ele preserva blocos `<!-- nome:begin -->` … `<!-- nome:end -->` em `external/nome.md`, inclusive quando outra ferramenta substitui um link por arquivo comum. Arquivos comuns são preservados em backups únicos `.bak-<data>-XXXX` antes de substituir por links.
 

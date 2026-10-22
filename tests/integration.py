@@ -50,6 +50,22 @@ with tempfile.TemporaryDirectory(prefix='dotagents-tests-') as temp:
     assert 'lerd original' in (state / 'AGENTS.md').read_text()
     assert 'lerd original' not in (state / 'CLAUDE.md').read_text()
     assert str(memory) in (state / 'AGENTS.md').read_text()
+    for generated in ['AGENTS.md', 'CLAUDE.md']:
+        rules = (state / generated).read_text()
+        assert f'Edite {repo}/global.md' in rules
+        assert 'inputmode="numeric"' in rules
+        assert '3950' in rules
+        assert 'Instruções do repositório dotagents' not in rules
+    # Only global.md supplies shared rules; repository instructions stay local.
+    with (repo / 'AGENTS.md').open('a') as instructions:
+        instructions.write('\nREPOSITORY_ONLY_SENTINEL\n')
+    with (repo / 'global.md').open('a') as shared:
+        shared.write('\nSHARED_RULE_SENTINEL\n')
+    run([command], env)
+    for generated in ['AGENTS.md', 'CLAUDE.md']:
+        rules = (state / generated).read_text()
+        assert 'SHARED_RULE_SENTINEL' in rules
+        assert 'REPOSITORY_ONLY_SENTINEL' not in rules
     for name, tags in [('plain', ''), ('tagged', 'applies_to: [php]\n')]:
         (memory / f'{name}.md').write_text(f'---\ndescription: {name}\n{tags}---\nBody\n')
     run([command], env)
