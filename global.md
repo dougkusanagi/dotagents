@@ -22,9 +22,10 @@ Instruções do usuário e do projeto (AGENTS.md/CLAUDE.md locais) prevalecem so
 
 - Em sistemas internos ou com acesso restrito, desative por padrão o cadastro público, salvo requisito explícito. Remova `/register`, endpoints equivalentes e links de cadastro; teste que usuários não autenticados não conseguem criar contas. Preserve o provisionamento autorizado por administradores ou convites, quando previsto.
 
-## Testes Laravel
+## Testes e CI
 
-- Em projetos Laravel, substitua o workflow padrão de testes do GitHub Actions por validação local: antes de cada commit, os testes afetados devem passar; para commits ou integrações em `main`/`master`, toda a suíte. Preserve os demais workflows.
+- Em qualquer projeto, rode os testes na máquina de desenvolvimento (local). Não use o GitHub Actions nem outro CI para validar, e não crie, ative nem altere workflows de testes, a menos que o usuário peça. Se o projeto já tem um workflow de testes, não dependa dele; remova-o ou desative-o só se o usuário pedir. Preserve os demais workflows (build, release, deploy).
+- Antes de cada commit, os testes afetados devem passar localmente; para commits ou integrações em `main`/`master`, toda a suíte. Use o comando de testes do próprio projeto (`bun test`, `uv run pytest`, `php artisan test`, `cargo test`…).
 
 ## Verificação de interface
 

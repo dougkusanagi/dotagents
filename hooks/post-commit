@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+# Regera os arquivos dos agentes sempre que o global.md (ou o código) muda no repositório.
+# Falha aqui não desfaz o commit: apenas avisa.
+repo="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+"$repo/bin/sync" >/dev/null || echo "aviso: dotagents-sync falhou; rode-o manualmente" >&2
+exit 0

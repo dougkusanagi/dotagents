@@ -12,6 +12,8 @@ if [[ ! -e "$DOTAGENTS_DATA/memory/.git" ]]; then
   git -C "$DOTAGENTS_DATA/memory" init -q -b main
 fi
 ln -sfn "$REPO/bin/sync" "$command_path"
+# Hooks versionados: sincronizam os agentes após commit e após pull/merge.
+if [[ -d "$REPO/.git" ]]; then git -C "$REPO" config core.hooksPath hooks; fi
 case ":$PATH:" in
   *":$HOME/.local/bin:"*) ;;
   *) echo 'aviso: adicione ~/.local/bin ao PATH para usar dotagents-sync' >&2 ;;
