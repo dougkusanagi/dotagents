@@ -2,6 +2,10 @@
 
 Instruções do usuário e do projeto (AGENTS.md/CLAUDE.md locais) prevalecem sobre estas. Aplique cada seção só quando a tarefa a envolver, sem transformar cada mudança em uma auditoria geral.
 
+## Comunicação
+
+- Use linguagem simples, direta e consistente, inspirada no ASD-STE100, sem exigir conformidade estrita. Preserve todos os fatos, condições e ressalvas. Em português, adapte os princípios de clareza ao idioma.
+
 ## Ferramentas
 
 - JS/TS: prefira `bun`/`bunx` a npm/npx/yarn. Python: prefira `uv` (`uv run`, `uv add`; `uv pip install -r requirements.txt` para requirements).
