@@ -50,7 +50,11 @@ Instruções do usuário e do projeto (AGENTS.md/CLAUDE.md locais) prevalecem so
 
 - Nas interfaces voltadas ao usuário final, nunca use mensagens genéricas ou jargão técnico: descreva em linguagem simples a ação em andamento, seu resultado ou o problema e o próximo passo útil, conforme o contexto. Informe apenas estados e detalhes reais, sem inventar progresso, prazos ou garantias.
 
-- Ao criar ou alterar interfaces, sempre inclua no menu um widget discreto e acessível para alternar entre os modos disponíveis: Claro (`light`), Escuro (`dark`) e Sistema (`system`). Indique a opção ativa, persista a preferência e, em Sistema, acompanhe o tema do dispositivo; reutilize os componentes e o mecanismo de tema do projeto.
+- Ao criar ou alterar interfaces, sempre inclua um seletor de tema (Claro `light`, Escuro `dark`, Sistema `system`), discreto, acessível e visível sem abrir menus, que persista a escolha e, em Sistema, acompanhe o tema do dispositivo. Reutilize o mecanismo de tema do projeto, se houver.
+- Em dashboards Laravel + Inertia + React, o padrão é o widget de referência em `templates/laravel-inertia-react/` neste repositório (caminho em "Gerado por" no cabeçalho deste arquivo; leia o `README.md` de lá). Copie o componente e o hook para o projeto e adapte só imports, ícones e tokens; não crie outra versão.
+  - Menu lateral: `variant="sidebar"` no rodapé da barra, acima do bloco do usuário, como abas com ícones (sol, lua, monitor). Só a opção ativa mostra o nome, com animação; sem rótulo "Tema" nem dropdown.
+  - Celular: no painel/dropdown da conta do usuário, com `variant="panel"`. Não acrescente linhas à barra de navegação inferior nem aumente sua altura.
+  - Menu horizontal (sem barra lateral): no desktop, `variant="icons"`, só com ícones, no cabeçalho; no celular, mesmo critério do painel da conta.
 - Preserve a linguagem visual do produto e escolha componentes pela tarefa e pelo contexto. Não acrescente dependências, abstrações ou complexidade apenas por novidade.
 - Em seleções extensas, prefira um combobox acessível com pesquisa; para poucas opções, select simples ou radio buttons. Siga a estratégia de busca e carregamento do projeto para listas grandes.
 - Quando fizer sentido criar uma entidade relacionada durante o preenchimento, ofereça uma ação explícita como "Criar categoria", distinta das opções e especialmente útil quando a busca não encontrar resultados. Respeite permissões e trate duplicidades.
