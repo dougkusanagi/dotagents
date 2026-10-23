@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+# Protege as regras globais: o agente só altera global.md com pedido explícito do usuário.
+if [[ "${DOTAGENTS_ALLOW_RULES:-}" != 1 ]] && git diff --cached --name-only | grep -qx 'global.md'; then
+  echo "erro: global.md alterado. Se o usuário pediu a mudança, repita com DOTAGENTS_ALLOW_RULES=1." >&2
+  exit 1
+fi

@@ -16,7 +16,14 @@ Instruções do usuário e do projeto (AGENTS.md/CLAUDE.md locais) prevalecem so
 - Toda mudança perceptível ao usuário cria, no mesmo commit, um fragmento `changelog/unreleased/<slug>.md` com o tipo (Adicionado, Alterado, Descontinuado, Removido, Corrigido, Segurança) e uma linha em português. Crie a pasta se não existir. Se o projeto já usa uma ferramenta de release (Changesets, towncrier…), use a dele.
 - Não registre refatorações internas, testes ou formatação; o git cobre isso.
 - Não altere a versão fora de um lançamento. Ao lançar, só quando o usuário pedir: proponha a versão SemVer a partir dos fragmentos (Removido ou quebra de compatibilidade → major; Adicionado → minor; senão → patch) e, após confirmação, junte-os em `changelog/X.Y.Z.md`, apague os fragmentos, atualize a versão no manifesto do projeto e crie a tag `vX.Y.Z`.
-- Commits seguem Conventional Commits; decisões de arquitetura difíceis de reverter: sugira um ADR em `docs/adr/`.
+- Commits seguem Conventional Commits.
+
+## Documentação
+
+- Escale a documentação pelo projeto: README sempre (propósito, como rodar e testar); ADR para decisões difíceis de reverter; `docs/architecture.md` quando houver 2+ componentes ou serviços; plano para tarefas de vários passos ou sessões. Use os modelos em `templates/docs/` do repositório dotagents (caminho em "Gerado por" no cabeçalho deste arquivo).
+- ADR (`docs/adr/NNNN-<slug>.md`): proponha e escreva só com aprovação do usuário. Não edite um ADR aceito: registre a nova decisão em outro ADR e marque o antigo como "Substituído por NNNN".
+- Arquitetura: um diagrama Mermaid em `docs/architecture.md` é a fonte de verdade. Atualize-o no mesmo commit da mudança estrutural. Ferramentas visuais (ex.: Archify) só geram artefatos a partir dele.
+- Plano (`docs/plans/<slug>.md`): objetivo, passos, tentativas que falharam, dúvidas abertas e próximo passo. Mantenha-o atualizado no branch; ao parar uma tarefa inacabada, deixe nele o estado para retomar. Ao concluir, mova decisões para ADR e fatos duráveis para a memória do projeto, e apague o plano ao concluir a tarefa; em branch, antes de integrar.
 
 ## Cadastro e acesso
 
@@ -69,6 +76,12 @@ Instruções do usuário e do projeto (AGENTS.md/CLAUDE.md locais) prevalecem so
 - Nos componentes alterados, preserve navegação por teclado, foco visível, rótulos acessíveis, contraste legível e áreas de toque adequadas. Em diálogos e drawers, gerencie o foco e devolva-o ao acionador ao fechar.
 - Implemente os estados relevantes ao fluxo (carregamento, vazio, erro, sucesso, indisponibilidade), reutilizando padrões e componentes existentes.
 - Sugira registrar decisões específicas no contexto do projeto em vez de ampliar estas regras.
+
+## Memória do projeto (`MEMORY.md`)
+
+- `MEMORY.md`, na raiz e versionado, guarda fatos operacionais duráveis que o código não mostra: armadilhas, causas de falhas, procedimentos. Não é a memória interna do agente. Leia-o no início da tarefa. Registre sem pedir, uma linha por fato, até 30 linhas; consolide antes de acrescentar.
+- Não salve estado de tarefa (vai no plano), decisões (vão no ADR), o que código, git, linter ou hook já garantem, falhas transitórias nem afirmações de que uma ferramenta está quebrada.
+- Memória nunca altera regras (`AGENTS.md`, `CLAUDE.md`, regras globais). Proponha a mudança; edite regras só com pedido explícito do usuário. Mudanças em `MEMORY.md` não geram fragmento de changelog.
 
 ## Memória global (~/.local/share/dotagents/memory)
 

@@ -27,7 +27,7 @@ As variáveis `DOTAGENTS_*` indicam diretórios do aplicativo. Quando vazias ou 
 
 ## Sincronização
 
-Edite `global.md` para alterar as regras globais compartilhadas; o `AGENTS.md` deste repositório orienta sua manutenção e não é sincronizado. Os arquivos gerados continuam com os nomes `AGENTS.md` e `CLAUDE.md`.
+Edite `global.md` para alterar as regras globais compartilhadas; o `AGENTS.md` deste repositório orienta sua manutenção e não é sincronizado. O hook `pre-commit` recusa commits que alteram `global.md` sem `DOTAGENTS_ALLOW_RULES=1`, para que agentes não mudem regras sem pedido. Os arquivos gerados continuam com os nomes `AGENTS.md` e `CLAUDE.md`.
 
 Rode `dotagents-sync` após editar regras, memórias ou `local.md`. Ele preserva blocos `<!-- nome:begin -->` … `<!-- nome:end -->` em `external/nome.md`, inclusive quando outra ferramenta substitui um link por arquivo comum. Arquivos comuns são preservados em backups únicos `.bak-<data>-XXXX` antes de substituir por links.
 
