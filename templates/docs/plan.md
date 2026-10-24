@@ -1,5 +1,7 @@
 # Plano: título da tarefa
 
+Tipo: tarefa (ou `contínuo`, ver regras de Documentação)
+
 ## Objetivo
 
 Resultado esperado e critério de conclusão.

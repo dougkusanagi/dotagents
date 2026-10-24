@@ -8,8 +8,8 @@ Instruções do usuário e do projeto (AGENTS.md/CLAUDE.md locais) prevalecem so
 
 ## Ferramentas
 
-- JS/TS: prefira `bun`/`bunx` a npm/npx/yarn. Python: prefira `uv` (`uv run`, `uv add`; `uv pip install -r requirements.txt` para requirements).
-- Se o projeto já usa outro gerenciador (lockfile ou configuração existente), use o do projeto. Nunca crie um segundo lockfile; se um comando bun falhar por incompatibilidade, recorra a `npx`/`npm run` só para executar, não para instalar.
+- JS/TS: sempre use `bun`/`bunx` quando possível, em vez de npm/npx/yarn/pnpm. Python: prefira `uv` (`uv run`, `uv add`; `uv pip install -r requirements.txt` para requirements).
+- Se o projeto tem `bun.lock` (ou `bun.lockb`), use bun, mesmo que haja outro lockfile; avise do lockfile extra e proponha removê-lo. Se o projeto usa só outro gerenciador, use o dele e sugira migrar para bun, sem migrar sem aprovação. Nunca crie um segundo lockfile. Se um comando bun falhar por incompatibilidade, use `npx`/`npm run` só para executar, não para instalar.
 
 ## Registro de mudanças
 
@@ -23,7 +23,9 @@ Instruções do usuário e do projeto (AGENTS.md/CLAUDE.md locais) prevalecem so
 - Escale a documentação pelo projeto: README sempre (propósito, como rodar e testar); ADR para decisões difíceis de reverter; `docs/architecture.md` quando houver 2+ componentes ou serviços; plano para tarefas de vários passos ou sessões. Use os modelos em `templates/docs/` do repositório dotagents (caminho em "Gerado por" no cabeçalho deste arquivo).
 - ADR (`docs/adr/NNNN-<slug>.md`): proponha e escreva só com aprovação do usuário. Não edite um ADR aceito: registre a nova decisão em outro ADR e marque o antigo como "Substituído por NNNN".
 - Arquitetura: um diagrama Mermaid em `docs/architecture.md` é a fonte de verdade. Atualize-o no mesmo commit da mudança estrutural. Ferramentas visuais (ex.: Archify) só geram artefatos a partir dele.
-- Plano (`docs/plans/<slug>.md`): objetivo, passos, tentativas que falharam, dúvidas abertas e próximo passo. Mantenha-o atualizado no branch; ao parar uma tarefa inacabada, deixe nele o estado para retomar. Ao concluir, mova decisões para ADR e fatos duráveis para a memória do projeto, e apague o plano ao concluir a tarefa; em branch, antes de integrar.
+- Plano (`docs/plans/<slug>.md`): objetivo, passos, tentativas que falharam, dúvidas abertas e próximo passo. Há dois tipos:
+  - Plano de tarefa (padrão): para uma mudança com fim definido. Mantenha-o atualizado no branch; ao parar uma tarefa inacabada, deixe nele o estado para retomar. Ao concluir, mova decisões para ADR e fatos duráveis para a memória do projeto e apague o plano; em branch, antes de integrar.
+  - Plano contínuo: para trabalho que segue depois de cada entrega, como operação, marketing ou roadmap. Marque-o com `Tipo: contínuo` abaixo do título. Não o apague ao concluir uma etapa: marque os passos feitos, atualize o próximo passo e registre os resultados. Crie um plano contínuo ou converta um plano de tarefa só com pedido do usuário; apague-o só quando o usuário encerrar o trabalho.
 
 ## Cadastro e acesso
 
