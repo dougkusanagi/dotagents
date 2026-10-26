@@ -11,6 +11,14 @@ Instruções do usuário e do projeto (AGENTS.md/CLAUDE.md locais) prevalecem so
 - JS/TS: sempre use `bun`/`bunx` quando possível, em vez de npm/npx/yarn/pnpm. Python: prefira `uv` (`uv run`, `uv add`; `uv pip install -r requirements.txt` para requirements).
 - Se o projeto tem `bun.lock` (ou `bun.lockb`), use bun, mesmo que haja outro lockfile; avise do lockfile extra e proponha removê-lo. Se o projeto usa só outro gerenciador, use o dele e sugira migrar para bun, sem migrar sem aprovação. Nunca crie um segundo lockfile. Se um comando bun falhar por incompatibilidade, use `npx`/`npm run` só para executar, não para instalar.
 
+## Implementação
+
+- Antes de editar, leia o fluxo afetado e identifique o que a mudança precisa alcançar: chamadas, testes, fixtures, configurações e exportações.
+- Prefira, nesta ordem, o que já existe no projeto, recursos da linguagem ou da plataforma e dependências instaladas. Não adicione uma dependência para substituir poucas linhas. Siga a estrutura e as convenções do projeto.
+- Faça a menor mudança que resolva o pedido inteiro. Não crie abstrações, opções nem código "para depois" sem pedido. Seja mínimo na solução, não na entrega: conclua o que a mudança quebrar e o que as outras seções destas regras exigem.
+- Em correções de bug, procure todas as chamadas do código afetado e corrija a causa raiz no código compartilhado, não em cada chamada.
+- Nunca reduza validações em fronteiras de confiança, tratamento de erros que evita perda de dados, segurança ou acessibilidade, inclusive ao mover ou unir código.
+
 ## Registro de mudanças
 
 - Toda mudança perceptível ao usuário cria, no mesmo commit, um fragmento `changelog/unreleased/<slug>.md` com o tipo (Adicionado, Alterado, Descontinuado, Removido, Corrigido, Segurança) e uma linha em português. Crie a pasta se não existir. Se o projeto já usa uma ferramenta de release (Changesets, towncrier…), use a dele.
@@ -65,7 +73,7 @@ Instruções do usuário e do projeto (AGENTS.md/CLAUDE.md locais) prevalecem so
   - Menu lateral: `variant="sidebar"` no rodapé da barra, acima do bloco do usuário, como abas com ícones (sol, lua, monitor). Só a opção ativa mostra o nome, com animação; sem rótulo "Tema" nem dropdown.
   - Celular: no painel/dropdown da conta do usuário, com `variant="panel"`. Não acrescente linhas à barra de navegação inferior nem aumente sua altura.
   - Menu horizontal (sem barra lateral): no desktop, `variant="icons"`, só com ícones, no cabeçalho; no celular, mesmo critério do painel da conta.
-- Preserve a linguagem visual do produto e escolha componentes pela tarefa e pelo contexto. Não acrescente dependências, abstrações ou complexidade apenas por novidade.
+- Preserve a linguagem visual do produto e escolha componentes pela tarefa e pelo contexto, sem trocá-los apenas por novidade.
 - Em seleções extensas, prefira um combobox acessível com pesquisa; para poucas opções, select simples ou radio buttons. Siga a estratégia de busca e carregamento do projeto para listas grandes.
 - Quando fizer sentido criar uma entidade relacionada durante o preenchimento, ofereça uma ação explícita como "Criar categoria", distinta das opções e especialmente útil quando a busca não encontrar resultados. Respeite permissões e trate duplicidades.
 - Use criação inline para casos muito simples, drawer ou diálogo para formulários curtos e página dedicada para fluxos extensos. Após criar, selecione o novo registro e preserve os dados do formulário de origem.
