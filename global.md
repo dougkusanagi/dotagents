@@ -21,9 +21,9 @@ Instruções do usuário e do projeto (AGENTS.md/CLAUDE.md locais) prevalecem so
 
 ## Registro de mudanças
 
-- Toda mudança perceptível ao usuário cria, no mesmo commit, um fragmento `changelog/unreleased/<slug>.md` com o tipo (Adicionado, Alterado, Descontinuado, Removido, Corrigido, Segurança) e uma linha em português. Crie a pasta se não existir. Se o projeto já usa uma ferramenta de release (Changesets, towncrier…), use a dele.
-- Não registre refatorações internas, testes ou formatação; o git cobre isso.
-- Não altere a versão fora de um lançamento. Ao lançar, só quando o usuário pedir: proponha a versão SemVer a partir dos fragmentos (Removido ou quebra de compatibilidade → major; Adicionado → minor; senão → patch) e, após confirmação, junte-os em `changelog/X.Y.Z.md`, apague os fragmentos, atualize a versão no manifesto do projeto e crie a tag `vX.Y.Z`.
+- Todo commit deve atualizar a versão do projeto e adicionar ou atualizar o changelog, por menor que seja a mudança. Inclua também refatorações internas, testes, documentação e formatação. Prepare esses registros no próprio commit, para que estejam atualizados após ele; não crie um commit adicional apenas para registrar o anterior.
+- Use o mecanismo de versão e changelog do projeto. Sem um mecanismo existente, mantenha a versão em `VERSION` e o registro em `changelog/X.Y.Z.md`, com o tipo (Adicionado, Alterado, Descontinuado, Removido, Corrigido, Segurança) e uma linha em português. Crie os arquivos e diretórios necessários e versione-os no Git.
+- Incremente a versão com SemVer: quebra de compatibilidade → major; funcionalidade nova compatível → minor; demais mudanças → patch. Se ainda não houver versão, inicie em `0.1.0`. Atualize as fontes de versão existentes de forma consistente. Se o projeto usa fragmentos de changelog, consolide os correspondentes à mudança na versão do commit. Publicar um lançamento e criar uma tag continuam dependendo de pedido do usuário.
 - Commits seguem Conventional Commits.
 
 ## Documentação
@@ -65,6 +65,8 @@ Instruções do usuário e do projeto (AGENTS.md/CLAUDE.md locais) prevalecem so
 - Para defeitos corrigidos, acrescente cobertura de regressão adequada. Se a inspeção visual não estiver disponível, informe a limitação.
 
 ## Usabilidade e padrões de interface
+
+- Em apps nativos, sempre inclua uma seção “Sobre”, acessível pela interface, com o nome e a versão atual do app. Obtenha a versão dos metadados ou da fonte de versão usada no build, para mantê-la consistente a cada atualização.
 
 - Nas interfaces voltadas ao usuário final, nunca use mensagens genéricas ou jargão técnico: descreva em linguagem simples a ação em andamento, seu resultado ou o problema e o próximo passo útil, conforme o contexto. Informe apenas estados e detalhes reais, sem inventar progresso, prazos ou garantias.
 

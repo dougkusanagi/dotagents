@@ -15,6 +15,8 @@ Requer Bash, Git, ferramentas GNU (`readlink -f`, `mktemp`) e `flock`. O instala
 
 Para atualizar: `git -C ~/dev/dotagents pull --ff-only && dotagents-sync`.
 
+A versão do projeto fica em `VERSION`; cada commit a atualiza e registra suas mudanças em `changelog/X.Y.Z.md`.
+
 ## Layout
 
 - Repositório: regras globais em `global.md`, instruções de manutenção em `AGENTS.md`, scripts e documentação; nenhum dado pessoal.
