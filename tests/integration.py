@@ -55,6 +55,8 @@ with tempfile.TemporaryDirectory(prefix='dotagents-tests-') as temp:
         assert f'Edite {repo}/global.md' in rules
         assert 'inputmode="numeric"' in rules
         assert '3950' in rules
+        assert f'{repo}/templates/docs/' in rules
+        assert '<dotagents>' not in rules
         assert 'Instruções do repositório dotagents' not in rules
     # Only global.md supplies shared rules; repository instructions stay local.
     with (repo / 'AGENTS.md').open('a') as instructions:

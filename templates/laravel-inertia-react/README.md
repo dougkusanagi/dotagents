@@ -1,6 +1,6 @@
 # Seletor de tema (Laravel + Inertia + React)
 
-Referência para o seletor Claro / Escuro / Sistema exigido em `AGENTS.md`. Copie e adapte; não crie outra versão do zero.
+Referência para o seletor Claro / Escuro / Sistema exigido nas regras globais (`global.md`). Copie e adapte; não crie outra versão do zero.
 
 - `appearance-menu-control.tsx`: o widget, com as variantes `sidebar`, `panel` e `icons`. Requer o `toggle-group` do shadcn/ui e usa Phosphor.
 - `use-appearance.ts`: hook que guarda a escolha em `localStorage` (ausente = Sistema), alterna a classe `dark` no `<html>`, acompanha o tema do dispositivo e sincroniza abas.

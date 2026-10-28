@@ -11,11 +11,19 @@ git clone https://github.com/dougkusanagi/dotagents ~/dev/dotagents
 ~/dev/dotagents/install.sh
 ```
 
-Requer Bash, Git, ferramentas GNU (`readlink -f`, `mktemp`) e `flock`. O instalador cria o repositório git das memórias e `~/.local/bin/dotagents-sync`, um link para `bin/sync`. Adicione `~/.local/bin` ao PATH se avisado.
+Requer Bash, Git, ferramentas GNU (`readlink -f`, `mktemp`) e `flock`. O instalador cria o repositório git das memórias e `~/.local/bin/dotagents-sync`, um link para `bin/sync`, e ativa os hooks de `hooks/`. Adicione `~/.local/bin` ao PATH se avisado.
 
 Para atualizar: `git -C ~/dev/dotagents pull --ff-only && dotagents-sync`.
 
-A versão do projeto fica em `VERSION`; cada commit a atualiza e registra suas mudanças em `changelog/X.Y.Z.md`.
+A versão do projeto fica em `VERSION` e muda a cada entrega. Mudanças relevantes são registradas em `changelog/unreleased/` e consolidadas em `changelog/X.Y.Z.md` na nova versão. Este projeto não cria tags de versão.
+
+## Testes
+
+```bash
+bash tests/test.sh
+```
+
+Requer Python 3 apenas para os testes. Os testes de integração usam um HOME temporário e não alteram a instalação ativa.
 
 ## Layout
 
@@ -29,7 +37,7 @@ As variáveis `DOTAGENTS_*` indicam diretórios do aplicativo. Quando vazias ou 
 
 ## Sincronização
 
-Edite `global.md` para alterar as regras globais compartilhadas; o `AGENTS.md` deste repositório orienta sua manutenção e não é sincronizado. O hook `pre-commit` recusa commits que alteram `global.md` sem `DOTAGENTS_ALLOW_RULES=1`, para que agentes não mudem regras sem pedido. Os arquivos gerados continuam com os nomes `AGENTS.md` e `CLAUDE.md`.
+Edite `global.md` para alterar as regras globais compartilhadas; o `AGENTS.md` deste repositório orienta sua manutenção e não é sincronizado. O hook `pre-commit` recusa commits que alteram `global.md` sem `DOTAGENTS_ALLOW_RULES=1`, para que agentes não mudem regras sem pedido. Os hooks `post-commit` e `post-merge` rodam o sync após cada commit e merge. Os arquivos gerados continuam com os nomes `AGENTS.md` e `CLAUDE.md`.
 
 Rode `dotagents-sync` após editar regras, memórias ou `local.md`. Ele preserva blocos `<!-- nome:begin -->` … `<!-- nome:end -->` em `external/nome.md`, inclusive quando outra ferramenta substitui um link por arquivo comum. Arquivos comuns são preservados em backups únicos `.bak-<data>-XXXX` antes de substituir por links.
 
@@ -64,7 +72,7 @@ git -C ~/.local/share/dotagents/memory remote add origin git@github.com:usuario/
 
 ## Migração do layout antigo
 
-Primeiro teste: `bash tests/test.sh` (requer Python 3 apenas para os testes). Antes de aplicar na instalação ativa, revise `git status`, inventarie inclusive arquivos ignorados em `~/.agents`, escolha um destino inexistente e registre os links atuais para recuperação. Preserve backups existentes dos agentes.
+Primeiro rode os testes (veja “Testes”). Antes de aplicar na instalação ativa, revise `git status`, inventarie inclusive arquivos ignorados em `~/.agents`, escolha um destino inexistente e registre os links atuais para recuperação. Preserve backups existentes dos agentes.
 
 Com estes scripts já presentes no clone antigo:
 

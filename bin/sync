@@ -118,7 +118,8 @@ write_out() {
     echo "<!-- Gerado por $AGENTS_HOME/bin/sync. Edite $AGENTS_HOME/global.md, local.md ou memory/ e rode dotagents-sync. -->"
     echo
     while IFS= read -r line || [[ -n "$line" ]]; do
-      printf '%s\n' "${line//\~\/.local\/share\/dotagents\/memory/$MEMORY_DIR}"
+      line="${line//\~\/.local\/share\/dotagents\/memory/"$MEMORY_DIR"}"
+      printf '%s\n' "${line//<dotagents>/"$AGENTS_HOME"}"
     done < "$AGENTS_HOME/global.md"
     echo
     printf '%s\n' "$index"
