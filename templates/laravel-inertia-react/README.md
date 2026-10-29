@@ -3,7 +3,7 @@
 Referência para o seletor Claro / Escuro / Sistema exigido nas regras globais (`global.md`). Copie e adapte; não crie outra versão do zero.
 
 - `appearance-menu-control.tsx`: o widget, com as variantes `sidebar`, `panel` e `icons`. Requer o `toggle-group` do shadcn/ui e usa Phosphor.
-- `use-appearance.ts`: hook que guarda a escolha em `localStorage` (ausente = Sistema), alterna a classe `dark` no `<html>`, acompanha o tema do dispositivo e sincroniza abas.
+- `use-appearance.ts`: hook que revela o novo tema num círculo a partir do botão clicado, guarda a escolha em `localStorage` (ausente = Sistema), alterna a classe `dark` no `<html>`, acompanha o tema do dispositivo e sincroniza abas.
 
 Para evitar o flash do tema errado, aplique a escolha antes da primeira pintura em `resources/views/app.blade.php`, dentro do `<head>`, com a mesma chave e as mesmas cores do hook:
 
@@ -19,5 +19,17 @@ Para evitar o flash do tema errado, aplique a escolha antes da primeira pintura 
     })();
 </script>
 ```
+
+Para a animação de troca de tema (círculo a partir do botão), desative a transição padrão no `resources/css/app.css`:
+
+```css
+::view-transition-old(root),
+::view-transition-new(root) {
+    animation: none;
+    mix-blend-mode: normal;
+}
+```
+
+Sem suporte à View Transitions API ou com `prefers-reduced-motion`, o tema troca sem animação.
 
 Remova `class="dark"` fixo do `<html>`, se existir, e use só tokens de cor (`bg-background`, `text-foreground`…) nos componentes.

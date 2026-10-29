@@ -1,6 +1,7 @@
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'; // shadcn/ui: `bunx shadcn add toggle-group`
 import { useAppearance, type Appearance } from '@/hooks/use-appearance';
 import { cn } from '@/lib/utils';
+import { useRef } from 'react';
 import { MonitorIcon, MoonIcon, SunIcon } from '@phosphor-icons/react'; // sem Phosphor, troque por Sun, Moon e Monitor da biblioteca de ícones do projeto
 
 const options: { value: Appearance; label: string; icon: typeof SunIcon }[] = [
@@ -20,12 +21,21 @@ export function AppearanceMenuControl({ variant = 'sidebar' }: { variant?: 'side
     const [appearance, setAppearance] = useAppearance();
     const panel = variant === 'panel';
     const icons = variant === 'icons';
+    // Origem da animação: o ponto do clique ou, pelo teclado, o centro do botão focado.
+    const pointer = useRef<{ x: number; y: number } | undefined>(undefined);
+    const origin = () => {
+        if (pointer.current) return pointer.current;
+        const rect = document.activeElement?.getBoundingClientRect();
+        return rect && { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
+    };
 
     return (
         <ToggleGroup
             type="single"
             value={appearance}
-            onValueChange={(value) => value && setAppearance(value as Appearance)}
+            onPointerDown={(event) => (pointer.current = { x: event.clientX, y: event.clientY })}
+            onKeyDown={() => (pointer.current = undefined)}
+            onValueChange={(value) => value && setAppearance(value as Appearance, origin())}
             aria-label="Tema"
             className={cn(
                 'bg-muted gap-0.5 rounded-xl p-1',
