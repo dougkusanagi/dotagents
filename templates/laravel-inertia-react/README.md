@@ -33,3 +33,9 @@ Para a animação de troca de tema (círculo a partir do botão), desative a tra
 Sem suporte à View Transitions API ou com `prefers-reduced-motion`, o tema troca sem animação.
 
 Remova `class="dark"` fixo do `<html>`, se existir, e use só tokens de cor (`bg-background`, `text-foreground`…) nos componentes.
+
+Posicione o widget conforme o layout:
+
+- Barra lateral: `variant="sidebar"` no rodapé, acima do usuário.
+- Celular: `variant="panel"` no painel da conta, sem aumentar a navegação inferior.
+- Só menu horizontal: `variant="icons"` no cabeçalho desktop; no celular, use o painel da conta.
