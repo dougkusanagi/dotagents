@@ -1,12 +1,42 @@
 # Shared by install.sh and bin/sync. DOTAGENTS_* name application directories.
+# No Windows (Git Bash/MSYS2/Cygwin), links precisam ser nativos para que os agentes os sigam.
+case "$(uname -s)" in
+  MINGW*|MSYS*|CYGWIN*)
+    DOTAGENTS_WINDOWS=1
+    export MSYS="${MSYS:+$MSYS }winsymlinks:nativestrict"
+    export CYGWIN="${CYGWIN:+$CYGWIN }winsymlinks:nativestrict"
+    ;;
+  *) DOTAGENTS_WINDOWS=0 ;;
+esac
+
+# Caminho para texto que os agentes leem: no Windows, C:/Users/... em vez de /c/Users/...
+native_path() {
+  if [[ "$DOTAGENTS_WINDOWS" == 1 ]] && command -v cygpath >/dev/null 2>&1; then
+    cygpath -m "$1"
+  else
+    printf '%s\n' "$1"
+  fi
+}
+
+# Aceita C:\..., C:/... e converte para /c/... no Windows.
+unix_path() {
+  local drive='^[A-Za-z]:[/\\]'
+  if [[ "$DOTAGENTS_WINDOWS" == 1 && "$1" =~ $drive ]] && command -v cygpath >/dev/null 2>&1; then
+    cygpath -u "$1"
+  else
+    printf '%s\n' "$1"
+  fi
+}
+
 xdg_path() {
-  local value="${!1:-}"
+  local value
+  value="$(unix_path "${!1:-}")"
   if [[ "$value" == /* ]]; then printf '%s\n' "$value"; else printf '%s\n' "$2"; fi
 }
 DOTAGENTS_XDG_CONFIG="$(xdg_path XDG_CONFIG_HOME "$HOME/.config")"
-DOTAGENTS_DATA="${DOTAGENTS_DATA:-$(xdg_path XDG_DATA_HOME "$HOME/.local/share")/dotagents}"
-DOTAGENTS_CONFIG="${DOTAGENTS_CONFIG:-$DOTAGENTS_XDG_CONFIG/dotagents}"
-DOTAGENTS_STATE="${DOTAGENTS_STATE:-$(xdg_path XDG_STATE_HOME "$HOME/.local/state")/dotagents}"
+DOTAGENTS_DATA="$(unix_path "${DOTAGENTS_DATA:-$(xdg_path XDG_DATA_HOME "$HOME/.local/share")/dotagents}")"
+DOTAGENTS_CONFIG="$(unix_path "${DOTAGENTS_CONFIG:-$DOTAGENTS_XDG_CONFIG/dotagents}")"
+DOTAGENTS_STATE="$(unix_path "${DOTAGENTS_STATE:-$(xdg_path XDG_STATE_HOME "$HOME/.local/state")/dotagents}")"
 for directory in "$DOTAGENTS_DATA" "$DOTAGENTS_CONFIG" "$DOTAGENTS_STATE"; do
   [[ "$directory" == /* ]] || { echo 'erro: DOTAGENTS_* deve ser um caminho absoluto' >&2; exit 1; }
 done

@@ -7,13 +7,28 @@ import tempfile
 SOURCE = Path(__file__).resolve().parents[1]
 BLOCK = '<!-- lerd:begin -->\nlerd original\n<!-- lerd:end -->\n'
 
+WINDOWS = os.name == 'nt'
+_write_text = Path.write_text
+# Mantém LF no Windows, como os scripts Bash esperam.
+Path.write_text = lambda self, data, encoding='utf-8', errors=None, newline='\n': _write_text(self, data, encoding=encoding, errors=errors, newline=newline)
+
 def run(args, env, ok=True):
-    result = subprocess.run([str(a) for a in args], env=env, text=True, capture_output=True)
+    args = [str(a) for a in args]
+    # No Windows os scripts Bash não são executáveis diretamente: usa o Git Bash.
+    if WINDOWS and Path(args[0]).suffix in ('', '.sh') and Path(args[0]).is_file():
+        args = [os.environ['DOTAGENTS_TEST_BASH']] + args
+    result = subprocess.run(args, env=env, text=True, capture_output=True, encoding='utf-8')
     if ok and result.returncode:
         raise AssertionError(f'{args}: {result.stdout}\n{result.stderr}')
     if not ok:
         assert result.returncode, args
     return result
+
+def points_to(path, target):
+    # Link, ou, no Windows sem permissão para links, cópia com o mesmo conteúdo.
+    if path.is_symlink():
+        return path.resolve() == target.resolve()
+    return WINDOWS and path.is_file() and path.read_text(encoding='utf-8') == target.read_text(encoding='utf-8')
 
 with tempfile.TemporaryDirectory(prefix='dotagents-tests-') as temp:
     root = Path(temp)
@@ -42,20 +57,19 @@ with tempfile.TemporaryDirectory(prefix='dotagents-tests-') as temp:
     state = home / '.local/state/dotagents'
     memory = home / '.local/share/dotagents/memory'
     for profile in profiles:
-        assert (profile / 'AGENTS.md').is_symlink()
-        assert (profile / 'AGENTS.md').resolve() == state / 'AGENTS.md'
+        assert points_to(profile / 'AGENTS.md', state / 'AGENTS.md')
         assert any(p.read_text() == 'previous rules\n' for p in profile.glob('AGENTS.md.bak-*'))
     assert not (unrelated / 'AGENTS.md').exists()
     assert (memory / '.git').is_dir()
     assert 'lerd original' in (state / 'AGENTS.md').read_text()
     assert 'lerd original' not in (state / 'CLAUDE.md').read_text()
-    assert str(memory) in (state / 'AGENTS.md').read_text()
+    assert memory.as_posix() in (state / 'AGENTS.md').read_text()
     for generated in ['AGENTS.md', 'CLAUDE.md']:
         rules = (state / generated).read_text()
-        assert f'Edite {repo}/global.md' in rules
+        assert f'Edite {repo.as_posix()}/global.md' in rules
         assert 'inputmode="numeric"' in rules
         assert '3950' in rules
-        assert f'{repo}/templates/docs/' in rules
+        assert f'{repo.as_posix()}/templates/docs/' in rules
         assert '<dotagents>' not in rules
         assert 'Instruções do repositório dotagents' not in rules
     # Only global.md supplies shared rules; repository instructions stay local.
@@ -72,7 +86,7 @@ with tempfile.TemporaryDirectory(prefix='dotagents-tests-') as temp:
         (memory / f'{name}.md').write_text(f'---\ndescription: {name}\n{tags}---\nBody\n')
     run([command], env)
     output = (state / 'AGENTS.md').read_bytes()
-    assert f'[php] tagged ({memory}/tagged.md)' in output.decode()
+    assert f'[php] tagged ({memory.as_posix()}/tagged.md)' in output.decode()
     head = run(['git', '-C', memory, 'rev-parse', 'HEAD'], env).stdout
     backups = list(home.rglob('*.bak-*'))
     run([command], env)
@@ -84,7 +98,7 @@ with tempfile.TemporaryDirectory(prefix='dotagents-tests-') as temp:
     later.mkdir()
     (later / 'config.toml').write_text('')
     run([command], dict(env, CODEX_HOME=str(later) + '/'))
-    assert (later / 'AGENTS.md').resolve() == state / 'AGENTS.md'
+    assert points_to(later / 'AGENTS.md', state / 'AGENTS.md')
     assert not list(later.glob('AGENTS.md.bak-*'))
     # Custom Codex profiles receive instructions and preserve existing files.
     profile = home / 'custom codex'
@@ -92,8 +106,7 @@ with tempfile.TemporaryDirectory(prefix='dotagents-tests-') as temp:
     (profile / 'AGENTS.md').write_text('existing profile rules\n')
     profile_env = dict(env, CODEX_HOME=str(profile))
     run([command], profile_env)
-    assert (profile / 'AGENTS.md').is_symlink()
-    assert (profile / 'AGENTS.md').resolve() == state / 'AGENTS.md'
+    assert points_to(profile / 'AGENTS.md', state / 'AGENTS.md')
     assert any(p.read_text() == 'existing profile rules\n' for p in profile.glob('AGENTS.md.bak-*'))
     profile_backups = list(profile.glob('AGENTS.md.bak-*'))
     run([command], profile_env)
@@ -105,7 +118,7 @@ with tempfile.TemporaryDirectory(prefix='dotagents-tests-') as temp:
     date = tools / 'date'
     date.write_text('#!/bin/sh\necho 20261020120000\n')
     date.chmod(0o755)
-    frozen = dict(env, PATH=f'{tools}:{env["PATH"]}')
+    frozen = dict(env, PATH=f'{tools}{os.pathsep}{env["PATH"]}')
     for text in ['first', 'second']:
         agents[0].unlink()
         agents[0].write_text(BLOCK.replace('original', text))
@@ -134,6 +147,9 @@ with tempfile.TemporaryDirectory(prefix='dotagents-tests-') as temp:
     assert 'teto' in capped.stderr
     assert 'plain' in (state / 'AGENTS.md').read_text()
     assert 'tagged' in (state / 'AGENTS.md').read_text()
+    if WINDOWS:  # o layout antigo nunca existiu no Windows e o Windows trava os arquivos em uso
+        print('OK (Windows): instalação, comando, memórias, idempotência, backups e overrides')
+        raise SystemExit
     # Legacy migration with tracked clone, git memory history, external-only block and skills.
     legacy_home = root / 'legacy home'
     legacy = legacy_home / '.agents'
@@ -158,7 +174,10 @@ with tempfile.TemporaryDirectory(prefix='dotagents-tests-') as temp:
     (legacy / 'build/external/lerd.md').write_text(BLOCK)
     (legacy / 'build/AGENTS.md').write_text(BLOCK)
     (legacy_home / '.codex').mkdir()
-    (legacy_home / '.codex/AGENTS.md').symlink_to(legacy / 'build/AGENTS.md')
+    try:
+        (legacy_home / '.codex/AGENTS.md').symlink_to(legacy / 'build/AGENTS.md')
+    except OSError:  # Windows sem permissão para links: o arquivo comum tem o mesmo efeito para o sync
+        shutil.copy(legacy / 'build/AGENTS.md', legacy_home / '.codex/AGENTS.md')
     dest = legacy_home / 'dev/dotagents'
     run([legacy / 'bin/migrate', legacy_home], old_env, ok=False)
     run([legacy / 'bin/migrate', dest], old_env)
@@ -171,6 +190,6 @@ with tempfile.TemporaryDirectory(prefix='dotagents-tests-') as temp:
     assert BLOCK in (migrated_state / 'AGENTS.md').read_text()
     assert 'PRIVATE' in (migrated_state / 'AGENTS.md').read_text()
     assert BLOCK not in (migrated_state / 'CLAUDE.md').read_text()
-    assert (legacy_home / '.codex/AGENTS.md').resolve() == migrated_state / 'AGENTS.md'
+    assert points_to(legacy_home / '.codex/AGENTS.md', migrated_state / 'AGENTS.md')
     run([legacy_home / '.local/bin/dotagents-sync'], old_env)
     print('OK: installation, symlink command, memories, idempotence, backups, overrides and legacy migration')

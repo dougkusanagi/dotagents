@@ -3,7 +3,8 @@
 set -euo pipefail
 REPO="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/.." && pwd)"
 source "$REPO/bin/paths"
-DEST="${1:?uso: bin/migrate /caminho/absoluto/do/repositorio}"
+[[ "$DOTAGENTS_WINDOWS" == 0 ]] || { echo 'erro: a migração do layout antigo não é suportada no Windows' >&2; exit 1; }
+DEST="$(unix_path "${1:?uso: bin/migrate /caminho/absoluto/do/repositorio}")"
 [[ "$REPO" == "$HOME/.agents" ]] || { echo 'erro: execute no clone antigo em ~/.agents' >&2; exit 1; }
 [[ "$DEST" == /* && "$DEST" != "$REPO" && "$DEST" != "$REPO/"* ]] || { echo 'erro: destino absoluto fora de ~/.agents obrigatório' >&2; exit 1; }
 [[ ! -e "$DEST" && ! -L "$DEST" ]] || { echo "erro: destino existente: $DEST" >&2; exit 1; }

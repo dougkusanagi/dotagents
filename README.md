@@ -4,14 +4,27 @@ Regras globais e memórias em Markdown compartilhadas entre Claude Code, Codex, 
 
 ## Instalação e atualização
 
-Clone em qualquer pasta, fora de `~/.agents`:
+Clone em qualquer pasta, fora de `~/.agents`, e rode o atalho da raiz:
 
 ```bash
 git clone https://github.com/dougkusanagi/dotagents ~/dev/dotagents
-~/dev/dotagents/install.sh
+~/dev/dotagents/install.sh    # Linux, macOS, Git Bash
 ```
 
-Requer Bash, Git, ferramentas GNU (`readlink -f`, `mktemp`) e `flock`. O instalador cria o repositório git das memórias e `~/.local/bin/dotagents-sync`, um link para `bin/sync`, e ativa os hooks de `hooks/`. Adicione `~/.local/bin` ao PATH se avisado.
+No Windows, também funciona direto no PowerShell ou no cmd: `.\install.cmd`.
+
+Atalhos na raiz do repositório:
+
+| Ação | Linux/macOS/Git Bash | PowerShell/cmd |
+| --- | --- | --- |
+| Instalar | `./install.sh` | `.\install.cmd` |
+| Sincronizar | `./sync.sh` | `.\sync.cmd` |
+
+Depois da instalação, `dotagents-sync` roda de qualquer pasta (no Windows, existe também `dotagents-sync.cmd`). Os atalhos da raiz apenas chamam `bin/sync` e `install.sh`.
+
+Requer Bash e Git. No Linux/macOS, requer também ferramentas GNU (`readlink -f`, `mktemp`); `flock` é opcional. No Windows, instale o [Git para Windows](https://git-scm.com/download/win): os atalhos `.cmd` usam o Git Bash dele, nunca o `bash.exe` do WSL. O instalador cria o repositório git das memórias e `~/.local/bin/dotagents-sync`, um link para `bin/sync`, e ativa os hooks de `hooks/`. Adicione `~/.local/bin` ao PATH se avisado.
+
+No Windows, criar links exige o Modo Desenvolvedor ligado (Configurações > Sistema > Para desenvolvedores) ou um terminal de administrador. Sem isso, o sync copia os arquivos gerados em vez de linkar. Cada cópia começa com o cabeçalho "Gerado por": o sync a atualiza sem backup, mas é preciso rodar `dotagents-sync` após cada mudança. Os caminhos nos arquivos gerados usam o formato `C:/Users/...`. A migração do layout antigo não existe no Windows.
 
 Para atualizar: `git -C ~/dev/dotagents pull --ff-only && dotagents-sync`.
 
