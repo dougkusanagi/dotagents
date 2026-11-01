@@ -39,10 +39,14 @@ Instruções do usuário e do projeto prevalecem sobre estas. Do projeto valem t
 ## Documentação
 
 - Escale a documentação pelo projeto: README sempre (propósito, como rodar e testar); ADR para decisões difíceis de reverter; `docs/architecture.md` quando houver 2+ componentes ou serviços; plano para tarefas de vários passos ou sessões. Use os modelos em `<dotagents>/templates/docs/`.
-- ADR (`docs/adr/NNNN-<slug>.md`): proponha e escreva só com aprovação do usuário. Não edite um ADR aceito: registre a nova decisão em outro ADR e marque o antigo como "Substituído por NNNN".
+- ADR (`docs/adr/NNNN-<slug>.md`): escreva só com aprovação do usuário, mas não espere que ele pergunte.
+  - Avalie a decisão acumulada, não só o pedido atual. Antes de encerrar cada entrega ou tarefa, e sempre que o plano ou os commits da tarefa somarem várias mudanças pequenas, revise o conjunto. Se o conjunto criou uma decisão difícil de reverter, proponha o ADR no fim da resposta, mesmo que cada pedido isolado fosse fácil de reverter.
+  - Pergunte-se: mudou o formato de dados ou de arquivos que o usuário já tem? Mudou uma interface ou um comportamento de que outros dependem? Escolheu uma abordagem entre alternativas reais?
+  - Se houver decisão assim, cite-a em uma linha e peça aprovação. Se não houver, não diga nada. Não repita uma proposta que o usuário já recusou.
+  - Não edite um ADR aceito: registre a nova decisão em outro ADR e marque o antigo como "Substituído por NNNN".
 - Arquitetura: um diagrama Mermaid em `docs/architecture.md` é a fonte de verdade. Atualize-o no mesmo commit da mudança estrutural. Ferramentas visuais (ex.: Archify) só geram artefatos a partir dele.
 - Plano (`docs/plans/<slug>.md`): objetivo, passos, tentativas que falharam, dúvidas abertas e próximo passo. Há dois tipos:
-  - Plano de tarefa (padrão): para uma mudança com fim definido. Mantenha-o atualizado no branch; ao parar uma tarefa inacabada, deixe nele o estado para retomar. Ao concluir, mova decisões para ADR e fatos duráveis para a memória do projeto e apague o plano; em branch, antes de integrar.
+  - Plano de tarefa (padrão): para uma mudança com fim definido. Mantenha-o atualizado no branch, inclusive as decisões tomadas, para revisá-las na regra de ADR; ao parar uma tarefa inacabada, deixe nele o estado para retomar. Ao concluir, mova decisões para ADR e fatos duráveis para a memória do projeto e apague o plano; em branch, antes de integrar.
   - Plano contínuo: para trabalho que segue depois de cada entrega, como operação, marketing ou roadmap. Marque-o com `Tipo: contínuo` abaixo do título. Não o apague ao concluir uma etapa: marque os passos feitos, atualize o próximo passo e registre os resultados. Crie um plano contínuo ou converta um plano de tarefa só com pedido do usuário; apague-o só quando o usuário encerrar o trabalho.
 
 ## Cadastro e acesso
