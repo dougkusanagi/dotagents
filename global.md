@@ -21,6 +21,7 @@ Instruções do usuário e do projeto prevalecem sobre estas. Do projeto valem t
 - Faça a menor mudança que resolva o pedido inteiro. Não crie abstrações, opções nem código "para depois" sem pedido. Seja mínimo na solução, não na entrega: conclua o que a mudança quebrar e o que as outras seções destas regras exigem.
 - Em correções de bug, procure todas as chamadas do código afetado e corrija a causa raiz no código compartilhado, não em cada chamada.
 - Nunca reduza validações em fronteiras de confiança, tratamento de erros que evita perda de dados, segurança ou acessibilidade, inclusive ao mover ou unir código.
+- Em jogos de plataforma, leia e aplique `<dotagents>/templates/games/platformer.md` antes de implementar o controle do personagem.
 
 ## Commits, versões e lançamentos
 
