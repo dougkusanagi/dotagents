@@ -39,6 +39,7 @@ Instruções do usuário e do projeto prevalecem sobre estas. Do projeto valem t
 ## Documentação
 
 - Escale a documentação pelo projeto: README sempre (propósito, como rodar e testar); ADR para decisões difíceis de reverter; `docs/architecture.md` quando houver 2+ componentes ou serviços; plano para tarefas de vários passos ou sessões. Use os modelos em `<dotagents>/templates/docs/`.
+- Mantenha o README atualizado. Ao concluir uma mudança que altere o propósito, o estado, as funções, a configuração (variáveis de ambiente, tarefas agendadas, serviços), a forma de rodar ou de testar, atualize o README no mesmo commit. Remova informações que deixaram de ser verdadeiras.
 - ADR (`docs/adr/NNNN-<slug>.md`): escreva só com aprovação do usuário, mas não espere que ele pergunte.
   - Avalie a decisão acumulada, não só o pedido atual. Antes de encerrar cada entrega ou tarefa, e sempre que o plano ou os commits da tarefa somarem várias mudanças pequenas, revise o conjunto. Se o conjunto criou uma decisão difícil de reverter, proponha o ADR no fim da resposta, mesmo que cada pedido isolado fosse fácil de reverter.
   - Pergunte-se: mudou o formato de dados ou de arquivos que o usuário já tem? Mudou uma interface ou um comportamento de que outros dependem? Escolheu uma abordagem entre alternativas reais?
