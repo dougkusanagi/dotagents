@@ -26,6 +26,12 @@ Requer Bash e Git. No Linux/macOS, requer também ferramentas GNU (`readlink -f`
 
 No Windows, criar links exige o Modo Desenvolvedor ligado (Configurações > Sistema > Para desenvolvedores) ou um terminal de administrador. Sem isso, o sync copia os arquivos gerados em vez de linkar. Cada cópia começa com o cabeçalho "Gerado por": o sync a atualiza sem backup, mas é preciso rodar `dotagents-sync` após cada mudança. Os caminhos nos arquivos gerados usam o formato `C:/Users/...`. A migração do layout antigo não existe no Windows.
 
+Para restaurar as memórias de um backup (ex.: depois de formatar), autentique o `gh` e informe o repositório privado na instalação. Veja "Memórias e regras pessoais":
+
+```bash
+DOTAGENTS_MEMORY_REMOTE=https://github.com/usuario/dotagents-memory.git ~/dev/dotagents/install.sh
+```
+
 Para atualizar: `git -C ~/dev/dotagents pull --ff-only && dotagents-sync`.
 
 A versão do projeto fica em `VERSION` e muda a cada entrega. Mudanças relevantes são registradas em `changelog/unreleased/` e consolidadas em `changelog/X.Y.Z.md` na nova versão. Este projeto não cria tags de versão.

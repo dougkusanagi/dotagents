@@ -6,3 +6,4 @@
 - Para mudanças perceptíveis ao usuário, crie um fragmento em `changelog/unreleased/` com o tipo e uma linha em português. Use Conventional Commits quando houver pedido de commit.
 - Leia `MEMORY.md` no início da tarefa e registre nele fatos duráveis de manutenção, conforme a seção "Memória do projeto" do `global.md`.
 - Altere `global.md` só com pedido explícito do usuário; nesse caso, faça o commit com `DOTAGENTS_ALLOW_RULES=1`. O hook `pre-commit` bloqueia os demais commits que tocam o arquivo. Nunca use `--no-verify`.
+- Para instalar ou reinstalar numa máquina com backup das memórias, use `DOTAGENTS_MEMORY_REMOTE=<url do repositório privado> ./install.sh`, conforme o README. A pasta de memórias precisa estar vazia ou ausente. Nunca copie memórias pessoais para este repositório.
