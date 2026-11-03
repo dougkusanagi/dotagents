@@ -9,7 +9,14 @@ if [[ -e "$command_path" && ! -L "$command_path" ]] && ! grep -q "/bin/sync" "$c
 fi
 mkdir -p "$DOTAGENTS_DATA/memory" "$DOTAGENTS_CONFIG" "$DOTAGENTS_STATE" "$HOME/.local/bin"
 if [[ ! -e "$DOTAGENTS_DATA/memory/.git" ]]; then
-  git -C "$DOTAGENTS_DATA/memory" init -q -b main
+  # Com DOTAGENTS_MEMORY_REMOTE, restaura as memórias do repositório privado.
+  if [[ -n "${DOTAGENTS_MEMORY_REMOTE:-}" ]]; then
+    [[ -z "$(ls -A "$DOTAGENTS_DATA/memory")" ]] \
+      || { echo "erro: $DOTAGENTS_DATA/memory não está vazio; não é possível clonar as memórias" >&2; exit 1; }
+    git clone -q "$DOTAGENTS_MEMORY_REMOTE" "$DOTAGENTS_DATA/memory"
+  else
+    git -C "$DOTAGENTS_DATA/memory" init -q -b main
+  fi
 fi
 if ! { ln -sfn "$REPO/bin/sync" "$command_path" 2>/dev/null && [[ -L "$command_path" ]]; }; then
   # Sem permissão para links no Windows: usa um script que chama o sync.

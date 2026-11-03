@@ -211,6 +211,12 @@ main() {
     git -C "$MEMORY_DIR" commit -qm "memória: sync $(date +%F)" \
       || echo "aviso: não foi possível commitar memory/" >&2
   fi
+  # Envia as memórias ao remoto origin, se houver, sem travar o sync sem rede.
+  if [[ -d "$MEMORY_DIR/.git" ]] && git -C "$MEMORY_DIR" remote get-url origin >/dev/null 2>&1 \
+    && [[ "$(git -C "$MEMORY_DIR" rev-list --count HEAD --not --remotes=origin 2>/dev/null || echo 0)" != 0 ]]; then
+    GIT_TERMINAL_PROMPT=0 timeout 30 git -C "$MEMORY_DIR" push -q origin HEAD 2>/dev/null \
+      || echo "aviso: não foi possível enviar memory/ ao remoto; o próximo sync tenta de novo" >&2
+  fi
 
   echo "ok: $OUT, $OUT_CLAUDE"
 }

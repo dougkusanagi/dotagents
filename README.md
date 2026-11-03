@@ -77,10 +77,18 @@ Prefira Pest nos projetos que já o utilizam.
 
 `description` ocupa uma linha; `applies_to` é opcional. O parser aceita campos simples, não YAML completo. `local.md` entra após o índice.
 
-O sync faz commit local automático das alterações das memórias; nunca push. Configure a identidade Git para permitir commits. Um remote privado é opcional:
+O sync faz commit automático das alterações das memórias. Configure a identidade Git para permitir commits. Para não perder as memórias, ligue a pasta a um repositório **privado**; com o remoto `origin`, cada sync também faz push dos commits pendentes. Sem rede, o sync avisa e tenta de novo no próximo:
 
 ```bash
-git -C ~/.local/share/dotagents/memory remote add origin git@github.com:usuario/agents-memory.git
+gh repo create usuario/dotagents-memory --private
+git -C ~/.local/share/dotagents/memory remote add origin https://github.com/usuario/dotagents-memory.git
+dotagents-sync
+```
+
+Para restaurar numa máquina nova, informe o repositório na instalação. A pasta de memórias precisa estar vazia ou ausente:
+
+```bash
+DOTAGENTS_MEMORY_REMOTE=https://github.com/usuario/dotagents-memory.git ~/dev/dotagents/install.sh
 ```
 
 ## Migração do layout antigo

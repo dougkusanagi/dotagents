@@ -93,6 +93,19 @@ with tempfile.TemporaryDirectory(prefix='dotagents-tests-') as temp:
     assert output == (state / 'AGENTS.md').read_bytes()
     assert head == run(['git', '-C', memory, 'rev-parse', 'HEAD'], env).stdout
     assert backups == list(home.rglob('*.bak-*'))
+    # With an origin remote, sync pushes memories and a new install restores them.
+    remote = root / 'memory remote.git'
+    run(['git', 'init', '-q', '--bare', '-b', 'main', remote], env)
+    run(['git', '-C', memory, 'remote', 'add', 'origin', remote], env)
+    run([command], env)
+    assert head == run(['git', '--git-dir', remote, 'rev-parse', 'main'], env).stdout
+    restored_home = root / 'restored home'
+    restored_home.mkdir()
+    restored_env = dict(env, HOME=str(restored_home), DOTAGENTS_MEMORY_REMOTE=str(remote))
+    run([repo / 'install.sh'], restored_env)
+    restored = restored_home / '.local/share/dotagents/memory'
+    assert (restored / 'tagged.md').read_text() == (memory / 'tagged.md').read_text()
+    assert f'tagged ({restored}/tagged.md)' in (restored_home / '.local/state/dotagents/AGENTS.md').read_text()
     # Sync also discovers profiles created after installation, without duplicates.
     later = home / '.codex_later'
     later.mkdir()
