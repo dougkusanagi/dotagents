@@ -25,7 +25,7 @@ Instruções do usuário e do projeto prevalecem sobre estas. Do projeto valem t
 
 ## Commits, versões e lançamentos
 
-- Faça commits pequenos e completos, com uma finalidade clara e mensagens Conventional Commits. Nunca inclua segredos nem ignore hooks com `--no-verify`. Siga os testes locais exigidos na seção “Testes e CI”.
+- Faça commits pequenos e completos, com uma finalidade clara e mensagens Conventional Commits. Um commit não mistura finalidades: correção, funcionalidade, refatoração e formatação vão em commits separados. Se a mensagem precisar de “e” para descrever duas finalidades, divida o commit. Nunca inclua segredos nem ignore hooks com `--no-verify`. Siga os testes locais exigidos na seção “Testes e CI”.
 - Registre mudanças relevantes ao usuário em `changelog/unreleased/<slug>.md`, com o tipo (Adicionado, Alterado, Descontinuado, Removido, Corrigido, Segurança) e uma linha em português. Commits da mesma mudança atualizam o mesmo fragmento. Mudanças exclusivamente em documentação, testes, formatação ou refatoração sem alteração de comportamento não exigem fragmento nem nova versão. Se o projeto já tem changelog (ex.: `CHANGELOG.md`) ou ferramenta própria (changesets, release-please…), use o formato e o local dele em vez destes.
 - Quando o usuário citar `main` ou `master`, entenda que ele se refere ao branch principal que já existe no projeto, mesmo que tenha outro nome (ex.: o usuário diz `main`, mas o projeto usa `master`). Não crie um branch com o nome citado. Se o branch principal não estiver claro, pergunte.
 - Faça push e integre no branch principal só com autorização do usuário ou do projeto. Com essa autorização, envie os commits ao concluir a tarefa ou alcançar um ponto útil de recuperação, após os testes locais passarem. Confira o branch e o remoto. Nunca faça force push em `main` ou `master`; nos demais branches, use `--force-with-lease` somente com autorização.
@@ -61,6 +61,12 @@ Instruções do usuário e do projeto prevalecem sobre estas. Do projeto valem t
 
 - Em qualquer projeto, rode os testes na máquina de desenvolvimento (local). Não use o GitHub Actions nem outro CI para validar, e não crie, ative nem altere workflows de testes, a menos que o usuário peça. Se o projeto já tem um workflow de testes, não dependa dele; remova-o ou desative-o só se o usuário pedir. Preserve os demais workflows (build, release, deploy).
 - Antes de cada commit, os testes afetados devem passar localmente; para commits ou integrações em `main`/`master`, toda a suíte. Use o comando de testes do próprio projeto (`bun test`, `uv run pytest`, `php artisan test`, `cargo test`…).
+- Em projetos com suíte local, mantenha um hook `pre-push` versionado que rode as validações do projeto e bloqueie o push quando alguma falhar. Crie-o em projetos novos a partir de `<dotagents>/templates/hooks/`, conforme seu `README.md`; em projetos existentes sem o hook, proponha antes de criar. Se o projeto já usa outro mecanismo de hooks (husky, lefthook…), aplique estas regras nele.
+  - O hook não altera arquivos: use o modo de checagem do formatador, não o de correção.
+  - O hook valida o código enviado. Com alterações sem commit em arquivos rastreados, ou quando o commit enviado não é o que está em checkout, ele bloqueia o push.
+  - Se a validação completa leva até ~3 minutos, rode-a em todo push. Acima disso, rode-a completa só em pushes para o branch principal e o de integração; nos demais, rode as checagens rápidas e os testes afetados.
+  - O hook cobre o push e, por isso, a abertura de PR. Ele não cobre o merge feito no GitHub; antes de um merge, confirme que a validação completa passou no commit que será integrado.
+- Teste intermitente é defeito. Corrija a causa antes de ativar ou manter o bloqueio; não repita o teste até passar, não aumente tempos limite sem causa conhecida e não o desative sem pedido do usuário. Se não achar a causa, informe o usuário.
 
 ## Verificação de interface e responsividade
 
@@ -70,6 +76,11 @@ Instruções do usuário e do projeto prevalecem sobre estas. Do projeto valem t
 - Ao criar ou alterar UI ou seeds que a exercitem, inspecione mobile, desktop e limites entre layouts com conteúdo realista e casos de borda. Confira quebra de texto, overflow, alinhamento, espaçamento, imagens, controles, menus, formulários, sobreposições e rolagem; leitura de código não valida responsividade.
 - Corrija os problemas encontrados no escopo e confirme o resultado, sem ciclos de polimento sem objetivo. Preserve informação e ações, permita consultar textos truncados e limite a rolagem horizontal aos componentes que precisem dela. No mobile, priorize informações essenciais, toque e teclado virtual.
 - Cubra defeitos corrigidos com regressão adequada. Informe quando a inspeção visual não estiver disponível.
+- Em todo PR com alteração visual, inclua capturas de antes e depois de cada tela alterada, em mobile e desktop. A exigência é por PR, não por commit.
+  - Capture o “antes” antes de editar a tela. Se a tela já foi editada, capture-o a partir do branch base, em um worktree temporário.
+  - Use dados de seed ou de teste. Nunca publique capturas com dados reais de clientes, credenciais ou segredos.
+  - Não faça commit das capturas nos branches de código. Envie-as ao branch órfão `pr-screenshots` do mesmo repositório, em `<branch>/<tela>-<antes|depois>-<mobile|desktop>.png`, e referencie cada uma no corpo do PR pela URL do arquivo no commit (`https://github.com/<dono>/<repo>/blob/<sha>/<caminho>?raw=true`). O push desse branch fica autorizado quando a abertura do PR estiver autorizada.
+  - Sem PR, ou se o envio falhar, mostre as capturas ao usuário na resposta e diga que não foram anexadas.
 
 ## Seeds e dados de teste
 

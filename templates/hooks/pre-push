@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+#
+# Bloqueia o push quando as validações locais falham.
+# Ative com: git config core.hooksPath .githooks
+
+set -uo pipefail
+
+# Pushes para estes branches sempre rodam a validação completa.
+full_branches=' main master dev develop '
+
+zero_sha='0000000000000000000000000000000000000000'
+head_commit="$(git rev-parse HEAD)"
+has_commits=0
+mode=quick
+
+while read -r _local_ref local_sha remote_ref _remote_sha; do
+    [[ "$local_sha" == "$zero_sha" ]] && continue
+    has_commits=1
+
+    if [[ "$(git rev-parse "$local_sha^{commit}")" != "$head_commit" ]]; then
+        echo "Push bloqueado: ${remote_ref#refs/*/} não é o commit em checkout. Faça checkout dele para validar o código que será enviado." >&2
+        exit 1
+    fi
+
+    if [[ "$full_branches" == *" ${remote_ref#refs/heads/} "* || "$remote_ref" == refs/tags/* ]]; then
+        mode=full
+    fi
+done
+
+# Apagar um branch remoto não envia código.
+[[ "$has_commits" == 1 ]] || exit 0
+
+cd "$(git rev-parse --show-toplevel)"
+
+if [[ -n "$(git status --porcelain --untracked-files=no)" ]]; then
+    echo 'Push bloqueado: há alterações sem commit, e a validação testaria um código diferente do enviado. Faça commit ou "git stash" e tente novamente.' >&2
+    exit 1
+fi
+
+validated_file="$(git rev-parse --git-dir)/validated-tree-$mode"
+
+if [[ -f "$validated_file" && "$(cat "$validated_file")" == "$(git rev-parse 'HEAD^{tree}')" ]]; then
+    echo 'Validação local já aprovada para este código.' >&2
+    exit 0
+fi
+
+echo "Rodando a validação local ($mode) antes do push..." >&2
+
+if ! scripts/validate.sh "--$mode" >&2; then
+    echo 'Push bloqueado: corrija as falhas acima e tente novamente.' >&2
+    exit 1
+fi
