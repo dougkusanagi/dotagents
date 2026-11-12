@@ -52,6 +52,15 @@ Requer Python 3 apenas para os testes. Os testes de integração usam um HOME te
 - Estado: `${DOTAGENTS_STATE}`, padrão `~/.local/state/dotagents`, com `AGENTS.md`, `CLAUDE.md` e `external/`.
 - Skills de outras ferramentas: `~/.agents/skills`, nunca gerenciado pelo dotagents.
 
+## Skills recomendadas
+
+As regras globais indicam a skill [Archify](https://github.com/tt-a1i/archify) para diagramas de arquitetura, fluxos, sequências, estados e ERDs em HTML. O dotagents não a instala. Instale-a uma vez por máquina em `~/.agents/skills/archify`, seguindo as instruções do repositório dela, e ligue-a aos agentes que não leem essa pasta:
+
+```bash
+ln -s ~/.agents/skills/archify ~/.claude/skills/archify   # Claude Code
+node ~/.agents/skills/archify/bin/archify.mjs doctor      # confere a instalação (requer Node)
+```
+
 As variáveis `DOTAGENTS_*` indicam diretórios do aplicativo. Quando vazias ou ausentes, usam respectivamente `XDG_DATA_HOME`, `XDG_CONFIG_HOME` e `XDG_STATE_HOME`, com `/dotagents`. XDG vazio ou relativo usa o padrão em HOME; DOTAGENTS relativo é erro. Use os mesmos valores na instalação e em todas as sincronizações, exportando-os no ambiente se personalizados.
 
 ## Sincronização

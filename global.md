@@ -49,6 +49,11 @@ Instruções do usuário e do projeto prevalecem sobre estas. Do projeto valem t
   - Ao encerrar, cite em uma linha cada ADR criado. Se não houver decisão grande, não diga nada.
   - Não edite um ADR aceito: registre a nova decisão em outro ADR e marque o antigo como "Substituído por NNNN".
 - Arquitetura: um diagrama Mermaid em `docs/architecture.md` é a fonte de verdade. Atualize-o no mesmo commit da mudança estrutural. Ferramentas visuais (ex.: Archify) só geram artefatos a partir dele.
+- Diagramas visuais: para diagramas da stack, do backend, de um fluxo, de chamadas entre serviços, de estados, de dados ou de tabelas, use a skill Archify (`~/.agents/skills/archify`). Leia o `SKILL.md` dela antes de começar e entregue o HTML gerado e validado por ela.
+  - Quando um diagrama ajudar a explicar uma arquitetura, um fluxo, uma decisão ou um plano, sugira-o em uma linha. Não o crie sem pedido.
+  - Num projeto, guarde a especificação JSON ao lado do HTML (ex.: `docs/architecture/<nome>.architecture.json` e `.html`). Se houver Mermaid em `docs/architecture.md`, gere a partir dele e mantenha os dois coerentes. Regenere o HTML sempre que a fonte mudar e nunca edite o HTML à mão. Siga as regras de diagrama do projeto, se existirem.
+  - Diga quando o diagrama mostra partes planejadas ou omitidas. Só afirme revisão visual depois de ver as capturas.
+  - Se a skill não estiver instalada, informe o usuário e use Mermaid.
 - Plano (`docs/plans/<slug>.md`): objetivo, passos, tentativas que falharam, dúvidas abertas e próximo passo. Há dois tipos:
   - Plano de tarefa (padrão): para uma mudança com fim definido. Mantenha-o atualizado no branch, inclusive as decisões tomadas, para revisá-las na regra de ADR; ao parar uma tarefa inacabada, deixe nele o estado para retomar. Ao concluir, mova decisões para ADR e fatos duráveis para a memória do projeto e apague o plano; em branch, antes de integrar.
   - Plano contínuo: para trabalho que segue depois de cada entrega, como operação, marketing ou roadmap. Marque-o com `Tipo: contínuo` abaixo do título. Não o apague ao concluir uma etapa: marque os passos feitos, atualize o próximo passo e registre os resultados. Crie um plano contínuo ou converta um plano de tarefa só com pedido do usuário; apague-o só quando o usuário encerrar o trabalho.
