@@ -84,8 +84,8 @@ Instruções do usuário e do projeto prevalecem sobre estas. Do projeto valem t
 - Em todo PR com alteração visual, inclua capturas de antes e depois de cada tela alterada, em mobile e desktop. A exigência é por PR, não por commit.
   - Capture o “antes” antes de editar a tela. Se a tela já foi editada, capture-o a partir do branch base, em um worktree temporário.
   - Use dados de seed ou de teste. Nunca publique capturas com dados reais de clientes, credenciais ou segredos.
-  - Não faça commit das capturas nos branches de código. Envie-as ao branch órfão `pr-screenshots` do mesmo repositório, em `<branch>/<tela>-<antes|depois>-<mobile|desktop>.png`, e referencie cada uma no corpo do PR pela URL do arquivo no commit (`https://github.com/<dono>/<repo>/blob/<sha>/<caminho>?raw=true`). O push desse branch fica autorizado quando a abertura do PR estiver autorizada.
-  - Sem PR, ou se o envio falhar, mostre as capturas ao usuário na resposta e diga que não foram anexadas.
+  - Não faça commit das capturas em nenhum branch. Anexe-as pelo GitHub, que as hospeda com o mesmo acesso do repositório: num navegador já logado no GitHub, cole cada imagem no campo de comentário do PR, copie a URL `https://github.com/user-attachments/assets/...` gerada e limpe o campo sem enviar o comentário. Use essas URLs no corpo do PR e confira que as imagens abrem.
+  - Sem PR, sem navegador logado no GitHub ou se o anexo falhar, mostre as capturas ao usuário na resposta, com os caminhos dos arquivos, e diga que não foram anexadas.
 
 ## Seeds e dados de teste
 
