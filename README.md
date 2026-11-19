@@ -34,7 +34,7 @@ DOTAGENTS_MEMORY_REMOTE=https://github.com/usuario/dotagents-memory.git ~/dev/do
 
 Para atualizar: `git -C ~/dev/dotagents pull --ff-only && dotagents-sync`.
 
-A versão do projeto fica em `VERSION` e muda a cada entrega. Mudanças relevantes são registradas em `changelog/unreleased/` e consolidadas em `changelog/X.Y.Z.md` na nova versão. Este projeto não cria tags de versão.
+A versão do projeto fica em `VERSION` e muda a cada entrega. Mudanças relevantes são registradas em `changelog/unreleased/` e consolidadas em `changelog/X.Y.Z.md` na nova versão. Este projeto não cria tags de versão. Antes de enviar uma entrega ao GitHub, o documento geral de novidades deve resumir a entrega e apontar para o Markdown com seus detalhes.
 
 ## Testes
 
