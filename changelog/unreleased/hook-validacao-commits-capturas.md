@@ -1,1 +1,0 @@
-Adicionado: Regras para hook `pre-push` de validação local (com modelo em `templates/hooks/`), testes intermitentes tratados como defeito, commits com uma única finalidade e capturas de antes e depois em PRs com alteração visual.
