@@ -4,6 +4,7 @@ Instruções do usuário e do projeto prevalecem sobre estas. Do projeto valem t
 
 ## Comunicação
 
+- Responda sempre em português do Brasil (pt-BR).
 - Use linguagem simples, direta e consistente, inspirada no ASD-STE100, sem exigir conformidade estrita. Preserve todos os fatos, condições e ressalvas. Em português, adapte os princípios de clareza ao idioma.
 
 ## Ferramentas
