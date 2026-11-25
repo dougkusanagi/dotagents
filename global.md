@@ -103,7 +103,7 @@ Instruções do usuário e do projeto prevalecem sobre estas. Do projeto valem t
   - Antes, procure um seletor existente (`theme`, `appearance`, `dark`). Se estiver no layout principal a até 2 cliques, use-o; se estiver só numa página de configurações (como nos scaffolds Laravel), adicione o widget no layout principal.
   - Guarde a escolha; em Sistema, acompanhe o dispositivo. Reutilize o mecanismo de tema do projeto.
   - Na troca, revele o novo tema num círculo a partir do botão clicado (View Transitions API); sem suporte ou com `prefers-reduced-motion`, troque sem animação.
-  - Desktop: widget discreto no layout principal. Celular: dentro de um menu (conta, hambúrguer ou "Mais"), nunca fixo na tela; sem menu, crie um botão de menu compacto. Verifique os dois separadamente.
+  - Desktop: widget discreto no layout principal. Celular: dentro de um menu existente (conta, hambúrguer ou "Mais"); sem menu, mostre um só botão discreto, só com o ícone do tema atual, que alterna Claro → Escuro → Sistema a cada toque e informa no rótulo acessível o tema atual e o próximo. Nunca mostre os três botões lado a lado no celular. Verifique os dois separadamente.
 - Em dashboards Laravel + Inertia + React, copie o widget de `<dotagents>/templates/laravel-inertia-react/` conforme seu `README.md`; adapte só imports, ícones e tokens.
 - Preserve a linguagem visual do produto e escolha componentes pela tarefa e pelo contexto, sem trocá-los apenas por novidade.
 - Em seleções extensas, prefira um combobox acessível com pesquisa; para poucas opções, select simples ou radio buttons. Siga a estratégia de busca e carregamento do projeto para listas grandes.
