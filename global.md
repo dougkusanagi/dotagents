@@ -83,11 +83,10 @@ Instruções do usuário e do projeto prevalecem sobre estas. Do projeto valem t
 - Ao criar ou alterar UI ou seeds que a exercitem, inspecione mobile, desktop e limites entre layouts com conteúdo realista e casos de borda. Confira quebra de texto, overflow, alinhamento, espaçamento, imagens, controles, menus, formulários, sobreposições e rolagem; leitura de código não valida responsividade.
 - Corrija os problemas encontrados no escopo e confirme o resultado, sem ciclos de polimento sem objetivo. Preserve informação e ações, permita consultar textos truncados e limite a rolagem horizontal aos componentes que precisem dela. No mobile, priorize informações essenciais, toque e teclado virtual.
 - Cubra defeitos corrigidos com regressão adequada. Informe quando a inspeção visual não estiver disponível.
-- Em todo PR com alteração visual, inclua capturas de antes e depois de cada tela alterada, em mobile e desktop. A exigência é por PR, não por commit.
+- Sempre que fizer alterações visuais, capture **antes e depois** de cada tela alterada (em mobile e desktop) e mostre as imagens na conversa ao resumir o que acabou de implementar, além de incluí-las no commit e no PR.
   - Capture o “antes” antes de editar a tela. Se a tela já foi editada, capture-o a partir do branch base, em um worktree temporário.
-  - Use dados de seed ou de teste. Nunca publique capturas com dados reais de clientes, credenciais ou segredos.
-  - Não faça commit das capturas em nenhum branch. Anexe-as ao PR com `gh pr edit --attach`, usando referências aos arquivos no corpo para posicioná-las. Confira que as imagens abrem e que estão nas posições corretas.
-  - Sem PR ou se o anexo falhar, mostre as capturas ao usuário na resposta, com os caminhos dos arquivos, e diga que não foram anexadas.
+  - Use dados de seed ou de teste. Nunca inclua capturas com dados reais de clientes, credenciais ou segredos.
+  - Exiba as capturas de antes e depois diretamente na resposta ao usuário (com os caminhos dos arquivos) e registre-as também no commit correspondente; quando houver PR, anexe-as com `gh pr edit --attach`, posicionando-as no corpo e conferindo que abrem corretamente (se o anexo falhar, avise na resposta).
 
 ## Seeds e dados de teste
 
