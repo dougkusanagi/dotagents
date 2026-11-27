@@ -86,7 +86,7 @@ Instruções do usuário e do projeto prevalecem sobre estas. Do projeto valem t
 - Sempre que fizer alterações visuais, capture **antes e depois** de cada tela alterada (em mobile e desktop) e mostre as imagens na conversa ao resumir o que acabou de implementar, além de incluí-las no commit e no PR.
   - Capture o “antes” antes de editar a tela. Se a tela já foi editada, capture-o a partir do branch base, em um worktree temporário.
   - Use dados de seed ou de teste. Nunca inclua capturas com dados reais de clientes, credenciais ou segredos.
-  - Exiba as capturas de antes e depois diretamente na resposta ao usuário (com os caminhos dos arquivos) e registre-as também no commit correspondente; quando houver PR, anexe-as com `gh pr edit --attach`, posicionando-as no corpo e conferindo que abrem corretamente (se o anexo falhar, avise na resposta).
+  - Exiba as capturas de antes e depois sempre **lado a lado** para cada caso/tela — de preferência gerando uma **imagem unificada** com "Antes" à esquerda e "Depois" à direita (com rótulos claros), em vez de listas separadas de antes e depois — diretamente na resposta ao usuário (com os caminhos dos arquivos) e registre-as também no commit correspondente; quando houver PR, anexe-as com `gh pr edit --attach`, posicionando-as no corpo e conferindo que abrem corretamente (se o anexo falhar, avise na resposta).
 
 ## Seeds e dados de teste
 
