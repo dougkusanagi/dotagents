@@ -105,7 +105,7 @@ with tempfile.TemporaryDirectory(prefix='dotagents-tests-') as temp:
     run([repo / 'install.sh'], restored_env)
     restored = restored_home / '.local/share/dotagents/memory'
     assert (restored / 'tagged.md').read_text() == (memory / 'tagged.md').read_text()
-    assert f'tagged ({restored}/tagged.md)' in (restored_home / '.local/state/dotagents/AGENTS.md').read_text()
+    assert f'tagged ({restored.as_posix()}/tagged.md)' in (restored_home / '.local/state/dotagents/AGENTS.md').read_text()
     # Sync also discovers profiles created after installation, without duplicates.
     later = home / '.codex_later'
     later.mkdir()
