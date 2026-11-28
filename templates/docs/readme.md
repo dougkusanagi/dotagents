@@ -4,7 +4,7 @@
 
 <!-- Opcional: badges de versão, licença e build, só se forem reais. -->
 
-<!-- Opcional: captura de tela ou GIF do app. -->
+<!-- Projetos com GUI: miniatura do app, ![Tela principal de <nome>](.github/preview.png). Remova em CLI e bibliotecas. -->
 
 ## Funcionalidades
 
